@@ -1,4 +1,5 @@
 import random
+import sys
 
 import pygame
 from Board import Board
@@ -106,6 +107,7 @@ while epochs > epochs_ran:
                         player_moved = True
                 elif event.type == pygame.QUIT:
                     running = False
+                    sys.exit()
         else:
             # Add code to allow an AI to select an action given the current state
             # The action should be a two-dimensional list [intention, direction]

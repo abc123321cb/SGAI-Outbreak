@@ -1,11 +1,11 @@
+import random
+
 import pygame
 from Board import Board
 import PygameFunctions as PF
 import random as rd
 import time
 import copy
-
-rd.seed(1)
 
 # Constants
 HUMAN_PLAY = True
@@ -14,6 +14,9 @@ COLUMNS = 30
 OFFSET = 50                    # Number of pixels to offset grid to the top-left side
 CELL_DIMENSIONS = 20           # Number of pixels for each cell
 DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
+
+if not HUMAN_PLAY:
+    rd.seed(1)
 
 # Player role variables
 player_role = "Government"      # Valid options are "Government" and "Zombie"

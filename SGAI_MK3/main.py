@@ -9,7 +9,7 @@ import time
 import copy
 
 # Constants
-HUMAN_PLAY = True
+HUMAN_PLAY = False
 ROWS = 30
 COLUMNS = 30
 OFFSET = 50                    # Number of pixels to offset grid to the top-left side
@@ -35,13 +35,17 @@ epsilon = 0.1
 epochs = 1000
 epochs_ran = 0
 Original_Board = copy.deepcopy(GameBoard)
+QTable = []  # To be used for reinforcement learning
+for s in range(ROWS * COLUMNS):
+    QTable.append([0] * 8)
+
 # Load images
 PF.load_images(GameBoard)
 
 
 while epochs > epochs_ran:
     epochs_ran += 1
-    GameBoard = Original_Board
+    GameBoard = copy.deepcopy(Original_Board)
     print(epochs_ran)
     running = True
     while running:
@@ -117,30 +121,40 @@ while epochs > epochs_ran:
             possible_moves = PF.get_possible_moves(GameBoard, player_loc, True)
 
             # Need a method to select one of the possible moves and set it in player_action
-            player_action, choice = PF.greedy_epsilon(epsilon, GameBoard.QTable[GameBoard.govt_index])
-
-
+            player_action, choice = PF.greedy_epsilon(epsilon, QTable[GameBoard.govt_index])
 
             if player_action not in possible_moves:
-                reward = -100
+                reward = -1000
+                print(QTable[GameBoard.govt_index][choice])
+                QTable[GameBoard.govt_index][choice] = PF.update_Q_value(
+                    (QTable[GameBoard.govt_index])[choice], alpha, reward, gamma,
+                    (QTable[GameBoard.govt_index])[choice])
                 break
+
 
 
             player_moved = True
 
         if player_moved:   # The player has selected an action
-
+            oldGameboard = copy.deepcopy(GameBoard)
             # Implement the player's action
+            Past_location = GameBoard.govt_index
             if player_action[0] == "move":
                 GameBoard.move(player_action[1], player_loc, True)
             elif player_action[0] == "vaccinate":
                 GameBoard.vaccinate(player_action[1], player_loc)
+
 
             # Allow all the people in the simulation to have a turn now
             PF.simulate(GameBoard)
 
             # People die!
             PF.progress_infection(GameBoard, DAYS_TO_DEATH)
+
+            if not HUMAN_PLAY:
+                reward = PF.reward(oldGameboard, GameBoard, player_action)
+                QTable[GameBoard.govt_index][choice] = PF.update_Q_value(
+                    QTable[oldGameboard.govt_index][choice], alpha, reward, gamma, max(GameBoard.QTable[GameBoard.govt_index]))
 
             # Check for end conditions
             if GameBoard.num_infected() == 0:   # There are no infected people left
@@ -150,5 +164,5 @@ while epochs > epochs_ran:
     
         # Update the display
         pygame.display.update()
-print(GameBoard.QTable)
+print(QTable)
 input("enter anything to continue.")

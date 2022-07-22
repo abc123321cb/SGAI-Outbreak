@@ -207,12 +207,14 @@ def display_finish_screen():
     pygame.display.update()
 
 
-def reward(state, action, ):
+def reward(old_board, new_board, action):
     # This is the all important reward function.
     r = -1
     if action[0] == "vaccinate":
-        r = 1
+        r = 10
 
+    r += old_board.num_infected() - new_board.num_infected()
+    r -= 3 * (new_board.population_initial - new_board.population - old_board.population_initial + old_board.population)
 
     return r
 
@@ -240,8 +242,9 @@ def greedy_epsilon(e, Q):
         c = random.choice(Q)
     else:
         c = max(Q)
+    c = Q.index(c)
     return convert_to_action(c), c
 
 
 def update_Q_value(cQ, learn, reward, discount, maxnewQ):
-    return cQ + learn(reward + discount * maxnewQ - cQ)
+    return cQ + learn * (reward + discount * maxnewQ - cQ)

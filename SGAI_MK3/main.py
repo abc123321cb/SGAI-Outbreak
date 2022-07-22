@@ -32,7 +32,7 @@ GameBoard.populate()
 alpha = 0.1
 gamma = 0.6
 epsilon = 0.1
-epochs = 1000
+epochs = 100
 epochs_ran = 0
 Original_Board = copy.deepcopy(GameBoard)
 QTable = []  # To be used for reinforcement learning
@@ -49,8 +49,10 @@ while epochs > epochs_ran:
     print(epochs_ran)
     running = True
     while running:
-
-        PF.run(GameBoard)
+        if HUMAN_PLAY or epochs == epochs_ran:
+            # update the display
+            PF.run(GameBoard)
+            pygame.display.update()
 
         # Get the (human or AI) player's intention for their turn
         player_moved = False
@@ -123,13 +125,12 @@ while epochs > epochs_ran:
             # Need a method to select one of the possible moves and set it in player_action
             player_action, choice = PF.greedy_epsilon(epsilon, QTable[GameBoard.govt_index])
 
-            if player_action not in possible_moves:
+            while player_action not in possible_moves:
                 reward = -1000
-                print(QTable[GameBoard.govt_index][choice])
                 QTable[GameBoard.govt_index][choice] = PF.update_Q_value(
                     (QTable[GameBoard.govt_index])[choice], alpha, reward, gamma,
                     (QTable[GameBoard.govt_index])[choice])
-                break
+                player_action, choice = PF.greedy_epsilon(epsilon, QTable[GameBoard.govt_index])
 
 
 
@@ -158,11 +159,10 @@ while epochs > epochs_ran:
 
             # Check for end conditions
             if GameBoard.num_infected() == 0:   # There are no infected people left
-                PF.run(GameBoard)
-                PF.display_finish_screen()
+                if HUMAN_PLAY or epochs == epochs_ran or True:
+                    PF.run(GameBoard)
+                    PF.display_finish_screen()
                 running = False
-    
-        # Update the display
-        pygame.display.update()
+
 print(QTable)
 input("enter anything to continue.")

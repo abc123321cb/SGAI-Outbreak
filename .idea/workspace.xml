@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="5ba20677-1cab-4a4a-8525-70d2d10278e2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SGAI_MK3/PygameFunctions.py" beforeDir="false" afterPath="$PROJECT_DIR$/SGAI_MK3/PygameFunctions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SGAI_MK3/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/SGAI_MK3/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -99,7 +97,14 @@
       <option name="project" value="LOCAL" />
       <updated>1658508271528</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Q learning!!! It doesn't seem to work though">
+      <created>1658511980143</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1658511980143</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -112,6 +117,7 @@
     <MESSAGE value="let it be more random when people are playing" />
     <MESSAGE value="removed some extra lines" />
     <MESSAGE value="made the exit button work" />
-    <option name="LAST_COMMIT_MESSAGE" value="made the exit button work" />
+    <MESSAGE value="Q learning!!! It doesn't seem to work though" />
+    <option name="LAST_COMMIT_MESSAGE" value="Q learning!!! It doesn't seem to work though" />
   </component>
 </project>

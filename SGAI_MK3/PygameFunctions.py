@@ -238,7 +238,7 @@ def convert_to_action(num):
 
 def greedy_epsilon(e, Q):
     r = random.random()
-    if r > float(e):
+    if r < float(e):
         c = random.choice(Q)
     else:
         c = max(Q)

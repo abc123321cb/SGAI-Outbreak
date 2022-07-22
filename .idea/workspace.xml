@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5ba20677-1cab-4a4a-8525-70d2d10278e2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/SGAI_MK3/Assets/person_govt.png" beforeDir="false" afterPath="$PROJECT_DIR$/SGAI_MK3/Assets/person_govt.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SGAI_MK3/Board.py" beforeDir="false" afterPath="$PROJECT_DIR$/SGAI_MK3/Board.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SGAI_MK3/Person.py" beforeDir="false" afterPath="$PROJECT_DIR$/SGAI_MK3/Person.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SGAI_MK3/PygameFunctions.py" beforeDir="false" afterPath="$PROJECT_DIR$/SGAI_MK3/PygameFunctions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SGAI_MK3/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/SGAI_MK3/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,12 +68,31 @@
       <option name="project" value="LOCAL" />
       <updated>1658335947444</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="updated readme">
+      <created>1658506888243</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1658506888243</updated>
+    </task>
+    <task id="LOCAL-00004" summary="let it be more random when people are playing">
+      <created>1658507329730</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1658507329730</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Now you can only heal zombies next to your people" />
     <MESSAGE value="Fixed a glitch" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed a glitch" />
+    <MESSAGE value="updated readme" />
+    <MESSAGE value="let it be more random when people are playing" />
+    <option name="LAST_COMMIT_MESSAGE" value="let it be more random when people are playing" />
   </component>
 </project>

@@ -120,17 +120,18 @@ while epochs > epochs_ran:
 
             # Determine a list of all possible moves
             player_loc = GameBoard.toCoord(GameBoard.state[GameBoard.govt_index].location)
+            player_ind = GameBoard.toIndex(player_loc)
             possible_moves = PF.get_possible_moves(GameBoard, player_loc, True)
 
             # Need a method to select one of the possible moves and set it in player_action
-            player_action, choice = PF.greedy_epsilon(epsilon, QTable[GameBoard.govt_index])
+            player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
 
             while player_action not in possible_moves:
                 reward = -1000
                 QTable[GameBoard.govt_index][choice] = PF.update_Q_value(
-                    (QTable[GameBoard.govt_index])[choice], alpha, reward, gamma,
-                    (QTable[GameBoard.govt_index])[choice])
-                player_action, choice = PF.greedy_epsilon(epsilon, QTable[GameBoard.govt_index])
+                    (QTable[player_ind])[choice], alpha, reward, gamma,
+                    (QTable[player_ind])[choice])
+                player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
 
 
 
@@ -154,12 +155,12 @@ while epochs > epochs_ran:
 
             if not HUMAN_PLAY:
                 reward = PF.reward(oldGameboard, GameBoard, player_action)
-                QTable[GameBoard.govt_index][choice] = PF.update_Q_value(
-                    QTable[oldGameboard.govt_index][choice], alpha, reward, gamma, max(GameBoard.QTable[GameBoard.govt_index]))
+                QTable[player_ind][choice] = PF.update_Q_value(
+                    QTable[player_ind][choice], alpha, reward, gamma, max(GameBoard.QTable[GameBoard.state[GameBoard.govt_index].location]))
 
             # Check for end conditions
             if GameBoard.num_infected() == 0:   # There are no infected people left
-                if HUMAN_PLAY or epochs == epochs_ran or True:
+                if HUMAN_PLAY or epochs_ran % 100 == 0:
                     PF.run(GameBoard)
                     PF.display_finish_screen()
                 running = False

@@ -104,7 +104,14 @@
       <option name="project" value="LOCAL" />
       <updated>1658511980143</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Q learning now looks cool">
+      <created>1658513341172</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1658513341172</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -118,6 +125,7 @@
     <MESSAGE value="removed some extra lines" />
     <MESSAGE value="made the exit button work" />
     <MESSAGE value="Q learning!!! It doesn't seem to work though" />
-    <option name="LAST_COMMIT_MESSAGE" value="Q learning!!! It doesn't seem to work though" />
+    <MESSAGE value="Q learning now looks cool" />
+    <option name="LAST_COMMIT_MESSAGE" value="Q learning now looks cool" />
   </component>
 </project>

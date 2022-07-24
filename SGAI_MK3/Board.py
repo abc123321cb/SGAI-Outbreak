@@ -193,3 +193,79 @@ class Board:
         # Change the person to government
         self.govt_index = selected_index
         self.state[selected_index].isGovt = True
+    
+    def sense_nearby(self):
+        """
+        Checks the found positions next to the government player and returns the contents.
+            'V' = a vaccinated person is in the location
+            'U' = an unvaccinated person is in the location
+            'X' = a boundary of the grid is in the location
+            'I' = an infected person is in the location
+            'E' = the space is empty
+        returns a list with the contents in the order of up, right, down, left
+        """
+        nearby_contents = []
+        player_loc = self.toCoord(self.state[self.govt_index].location)
+        
+        # Look up
+        if player_loc[1] == 0:
+            nearby_contents.append('X')
+        else:
+            this_contents = self.state[self.toIndex([player_loc[0], player_loc[1] - 1])]
+            if this_contents == None:
+                nearby_contents.append('E')
+            else:
+                if this_contents.isInfected:
+                    nearby_contents.append("I")
+                elif this_contents.isVaccinated:
+                    nearby_contents.append("V")
+                else:
+                    nearby_contents.append("U")
+        
+        # Look right
+        if player_loc[0] == (self.columns - 1):
+            nearby_contents.append('X')
+        else:
+            this_contents = self.state[self.toIndex([player_loc[0] + 1, player_loc[1]])]
+            if this_contents == None:
+                nearby_contents.append('E')
+            else:
+                if this_contents.isInfected:
+                    nearby_contents.append("I")
+                elif this_contents.isVaccinated:
+                    nearby_contents.append("V")
+                else:
+                    nearby_contents.append("U")
+        
+        # Look down
+        if player_loc[1] == (self.rows - 1):
+            nearby_contents.append('X')
+        else:
+            this_contents = self.state[self.toIndex([player_loc[0], player_loc[1] + 1])]
+            if this_contents == None:
+                nearby_contents.append('E')
+            else:
+                if this_contents.isInfected:
+                    nearby_contents.append("I")
+                elif this_contents.isVaccinated:
+                    nearby_contents.append("V")
+                else:
+                    nearby_contents.append("U")
+        
+        # Look left
+        if player_loc[0] == 0:
+            nearby_contents.append('X')
+        else:
+            this_contents = self.state[self.toIndex([player_loc[0] - 1, player_loc[1]])]
+            if this_contents == None:
+                nearby_contents.append('E')
+            else:
+                if this_contents.isInfected:
+                    nearby_contents.append("I")
+                elif this_contents.isVaccinated:
+                    nearby_contents.append("V")
+                else:
+                    nearby_contents.append("U")
+        
+        return nearby_contents
+        

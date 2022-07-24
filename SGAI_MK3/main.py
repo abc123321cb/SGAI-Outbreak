@@ -7,7 +7,7 @@ import random as rd
 import copy
 
 # Constants
-HUMAN_PLAY = False
+HUMAN_PLAY = True
 SHOW_EVERY_FRAME = False       # Will show each action taken by AI if True. Shows only last frame if False.
 ROWS = 30
 COLUMNS = 30
@@ -32,14 +32,28 @@ GameBoard.populate()
 alpha = 0.9       # learning rate:   the rate that the AI learns
 gamma = 0.9       # discount factor: discount for future rewards
 epsilon = 1.0     # the percent of time to take the best action (instead of random)
-episodes = 100    # Number of episodes to run reinforcement learning
+if HUMAN_PLAY:
+    episodes = 1
+else:
+    episodes = 100    # Number of episodes to run reinforcement learning
 Original_Board = copy.deepcopy(GameBoard)
 QTable = []       # To be used for reinforcement learning
 for s in range(ROWS * COLUMNS):
     QTable.append([0] * 8)  # (4 x move) + (4 x vaccinate)
 
-epsilon_range = range(10,11)
+# up, right, down, left
+possible_entries = ['V','U','X','I','E']
+QTable2 = {}
+for a in possible_entries:              # up
+    QTable2[a] = {}
+    for b in possible_entries:          # right
+        QTable2[a][b] = {}
+        for c in possible_entries:      # down
+            QTable2[a][b][c] = {}
+            for d in possible_entries:  # left
+                QTable2[a][b][c][d] = [0] * 8
 
+epsilon_range = range(10,11)
 epsilon_list = []
 survivor_list = []
 if SHOW_EPSILON_GRAPH:

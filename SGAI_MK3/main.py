@@ -29,13 +29,13 @@ GameBoard = Board((ROWS, COLUMNS), OFFSET, CELL_DIMENSIONS, roleToRoleNum[player
 GameBoard.populate()
 
 # Self play variables
-alpha = 0.1     # learning rate:   the rate that the AI learns
-gamma = 0.6     # discount factor: discount for future rewards
-epsilon = 0.9   # the percent of time to take the best action (instead of random)
-episodes = 1
+alpha = 0.9       # learning rate:   the rate that the AI learns
+gamma = 0.9       # discount factor: discount for future rewards
+epsilon = 0.9     # the percent of time to take the best action (instead of random)
+episodes = 100    # Number of episodes to run reinforcement learning
 episodes_ran = 0
 Original_Board = copy.deepcopy(GameBoard)
-QTable = []  # To be used for reinforcement learning
+QTable = []       # To be used for reinforcement learning
 for s in range(ROWS * COLUMNS):
     QTable.append([0] * 9)  # (4 x move) + (4 x vaccinate) + pass
 
@@ -44,9 +44,13 @@ PF.load_images(GameBoard)
 
 
 while episodes > episodes_ran:
+    
+    # Increment the episode counter and reset the board
     episodes_ran += 1
-    GameBoard = copy.deepcopy(Original_Board)
-    print(episodes_ran)
+    if episodes_ran > 1:
+        print(f"Episode #{episodes_ran} ended with {GameBoard.population} alive.")
+        GameBoard = copy.deepcopy(Original_Board)
+    
     running = True
     while running:
         
@@ -54,9 +58,7 @@ while episodes > episodes_ran:
         if HUMAN_PLAY or episodes == episodes_ran:
             PF.run(GameBoard)
             pygame.display.update()
-
-
-
+        
         # Get the (human or AI) player's intention for their turn
         player_moved = False
         if HUMAN_PLAY:
@@ -132,9 +134,17 @@ while episodes > episodes_ran:
             while player_action not in possible_moves:
                 reward = -1000
                 QTable[GameBoard.govt_index][choice] = PF.update_Q_value(
-                    (QTable[player_ind])[choice], alpha, reward, gamma,
-                    (QTable[player_ind])[choice])
+                    QTable[player_ind][choice],
+                    alpha,
+                    reward,
+                    gamma,
+                    QTable[player_ind][choice]
+                )
                 player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
+            
+            #print(player_action, possible_moves)
+            #time.sleep(3)
+            
             player_moved = True
         
         
@@ -150,25 +160,36 @@ while episodes > episodes_ran:
             elif player_action[0] == "vaccinate":
                 GameBoard.vaccinate(player_action[1], player_loc)
             
+            # If the AI is playing, then implement reinforcement learning
+            if not HUMAN_PLAY:
+                # Figure out the reward for the action selected
+                reward = PF.reward(oldGameboard, GameBoard, player_action)
+                
+                # Update the Q-Table
+                # player_ind is the location of the player at the old location
+                QTable[player_ind][choice] = PF.update_Q_value(
+                    QTable[player_ind][choice],
+                    alpha,
+                    reward,
+                    gamma,
+                    max(GameBoard.QTable[GameBoard.state[GameBoard.govt_index].location])
+                )
+                #time.sleep(.1)
+            
             # Allow all the people in the simulation to have a turn now
             PF.simulate(GameBoard)
             
             # People die!
             PF.progress_infection(GameBoard, DAYS_TO_DEATH)
             
-            if not HUMAN_PLAY:
-                reward = PF.reward(oldGameboard, GameBoard, player_action)
-                QTable[player_ind][choice] = PF.update_Q_value(
-                    QTable[player_ind][choice], alpha, reward, gamma, max(GameBoard.QTable[GameBoard.state[GameBoard.govt_index].location]))
-            
             # Check for end conditions
             if GameBoard.num_infected() == 0:   # There are no infected people left
-                if HUMAN_PLAY or episodes_ran % 100 == 0:
-                    PF.run(GameBoard)
-                    PF.display_finish_screen()
+                #if HUMAN_PLAY or episodes_ran % 100 == 0 or episodes_ran == episodes:
+                PF.run(GameBoard)
+                PF.display_finish_screen()
                 running = False
             
             del oldGameboard
             
 print(QTable)
-input("enter anything to continue.")
+input("Enter anything to continue.")

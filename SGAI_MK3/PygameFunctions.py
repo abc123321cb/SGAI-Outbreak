@@ -193,15 +193,10 @@ def progress_infection(GameBoard, days_to_death):
 
 
 def display_stats(GameBoard):
-    screen.blit(font.render("Initial population:", True, WHITE), (800, 400))
-    screen.blit(font.render(f"{GameBoard.population_initial}", True, WHITE), (1000, 400))
-    screen.blit(font.render("Current population:", True, WHITE), (800, 425))
-    screen.blit(font.render(f"{GameBoard.population}", True, WHITE), (1000, 425))
-    screen.blit(font.render("Total infected:", True, WHITE), (800, 450))
-    screen.blit(font.render(f"{GameBoard.num_infected()}", True, WHITE), (1000, 450))
-    screen.blit(font.render("Total vaccinated:", True, WHITE), (800, 475))
-    screen.blit(font.render(f"{GameBoard.num_vaccinated()}", True, WHITE), (1000, 475))
-
+    screen.blit(font.render(f"Initial population: {GameBoard.population_initial}", True, WHITE), (800, 400))
+    screen.blit(font.render(f"Current population: {GameBoard.population}", True, WHITE), (800, 425))
+    screen.blit(font.render(f"Total infected: {GameBoard.num_infected()}", True, WHITE), (800, 450))
+    screen.blit(font.render(f"Total vaccinated: {GameBoard.num_vaccinated()}", True, WHITE), (800, 475))
 
 def display_finish_screen():
     screen.blit(font.render("SIMULATION OVER.", True, WHITE), (800, 300))
@@ -221,7 +216,6 @@ def reward(old_board, new_board, action):
 
     return r
 
-
 def convert_to_action(num):
     """
     Take a numerical action and returns the correspodning action as a string.
@@ -234,7 +228,6 @@ def convert_to_action(num):
         this_action = ["move"]
     else:           # 8
         this_action = ["pass"]
-        print("pass selected")
     
     # Now add the direction
     if num == 0 or num == 4:
@@ -261,8 +254,11 @@ def greedy_epsilon(epsilon, QTable_at_curr_position):
     return convert_to_action(choice), choice
 
 
-def update_Q_value(cQ, learn, reward, discount, maxnewQ):
+def update_Q_value(old_Q, learn, reward, discount_factor, max_new_Q):
     """
-    
+    Calculates the Q value to update the Q Table.
+    Temporal difference = reward + (discount_factor * Max Q value at new location) - Old Q-value
+    New Q-value = Old Q-value + (learning_rate * temporal difference)
     """
-    return cQ + learn * (reward + discount * maxnewQ - cQ)
+    temporal_difference = reward + (discount_factor * max_new_Q) - old_Q
+    return old_Q + (learn * temporal_difference)

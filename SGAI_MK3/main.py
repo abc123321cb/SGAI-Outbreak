@@ -32,8 +32,8 @@ GameBoard.populate()
 alpha = 0.1
 gamma = 0.6
 epsilon = 0.1
-epochs = 100
-epochs_ran = 0
+episodes = 100
+episodes_ran = 0
 Original_Board = copy.deepcopy(GameBoard)
 QTable = []  # To be used for reinforcement learning
 for s in range(ROWS * COLUMNS):
@@ -43,13 +43,13 @@ for s in range(ROWS * COLUMNS):
 PF.load_images(GameBoard)
 
 
-while epochs > epochs_ran:
-    epochs_ran += 1
+while episodes > episodes_ran:
+    episodes_ran += 1
     GameBoard = copy.deepcopy(Original_Board)
-    print(epochs_ran)
+    print(episodes_ran)
     running = True
     while running:
-        if HUMAN_PLAY or epochs == epochs_ran:
+        if HUMAN_PLAY or episodes == episodes_ran:
             # update the display
             PF.run(GameBoard)
             pygame.display.update()
@@ -160,7 +160,7 @@ while epochs > epochs_ran:
 
             # Check for end conditions
             if GameBoard.num_infected() == 0:   # There are no infected people left
-                if HUMAN_PLAY or epochs_ran % 100 == 0:
+                if HUMAN_PLAY or episodes_ran % 100 == 0:
                     PF.run(GameBoard)
                     PF.display_finish_screen()
                 running = False

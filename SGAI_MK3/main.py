@@ -29,10 +29,10 @@ GameBoard = Board((ROWS, COLUMNS), OFFSET, CELL_DIMENSIONS, roleToRoleNum[player
 GameBoard.populate()
 
 # Self play variables
-alpha = 0.1
-gamma = 0.6
-epsilon = 0.1
-episodes = 100
+alpha = 0.1     # learning rate:   the rate that the AI learns
+gamma = 0.6     # discount factor: discount for future rewards
+epsilon = 0.9   # the percent of time to take the best action (instead of random)
+episodes = 1
 episodes_ran = 0
 Original_Board = copy.deepcopy(GameBoard)
 QTable = []  # To be used for reinforcement learning
@@ -49,10 +49,13 @@ while episodes > episodes_ran:
     print(episodes_ran)
     running = True
     while running:
+        
+        # Update the display
         if HUMAN_PLAY or episodes == episodes_ran:
-            # update the display
             PF.run(GameBoard)
             pygame.display.update()
+
+
 
         # Get the (human or AI) player's intention for their turn
         player_moved = False
@@ -102,10 +105,9 @@ while episodes > episodes_ran:
                         player_action = ["move", "right"]
                     elif event.key == pygame.K_ESCAPE:
                         running = False
-
-                    player_loc = GameBoard.toCoord(GameBoard.state[GameBoard.govt_index].location)
-
+                    
                     # Determine set of possible moves given current state
+                    player_loc = GameBoard.toCoord(GameBoard.state[GameBoard.govt_index].location)
                     possible_moves = PF.get_possible_moves(GameBoard, player_loc, True)
 
                     # Check if the move is valid
@@ -115,37 +117,33 @@ while episodes > episodes_ran:
                     running = False
                     sys.exit()
         else:
-            # Add code to allow an AI to select an action given the current state
-            # The action should be a two-dimensional list [intention, direction]
-
-            # Determine a list of all possible moves
+            # Get the current player location and determine a list of all possible moves
             player_loc = GameBoard.toCoord(GameBoard.state[GameBoard.govt_index].location)
             player_ind = GameBoard.toIndex(player_loc)
             possible_moves = PF.get_possible_moves(GameBoard, player_loc, True)
-
-            # Need a method to select one of the possible moves and set it in player_action
+            
+            # Select one of the possible moves using the greedy epsilon method and set it in player_action
             player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
-
+            
             while player_action not in possible_moves:
                 reward = -1000
                 QTable[GameBoard.govt_index][choice] = PF.update_Q_value(
                     (QTable[player_ind])[choice], alpha, reward, gamma,
                     (QTable[player_ind])[choice])
                 player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
-
-
-
             player_moved = True
-
-        if player_moved:   # The player has selected an action
+        
+        
+        
+        # If the player or AI has selected an action, then the simulation can advance one step
+        if player_moved:   
             oldGameboard = copy.deepcopy(GameBoard)
+            
             # Implement the player's action
-            Past_location = GameBoard.govt_index
             if player_action[0] == "move":
                 GameBoard.move(player_action[1], player_loc, True)
             elif player_action[0] == "vaccinate":
                 GameBoard.vaccinate(player_action[1], player_loc)
-
 
             # Allow all the people in the simulation to have a turn now
             PF.simulate(GameBoard)
@@ -164,6 +162,8 @@ while episodes > episodes_ran:
                     PF.run(GameBoard)
                     PF.display_finish_screen()
                 running = False
-
+            
+            del oldGameboard
+            
 print(QTable)
 input("enter anything to continue.")

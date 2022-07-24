@@ -162,7 +162,7 @@ def simulate(GameBoard):
                 # Get the person's location
                 player_loc = GameBoard.toCoord(person.location)
                 
-                # If the person is infected, then potentially infect any adjact people
+                # If the person is infected, then potentially infect any adjacent people
                 if person.isInfected:
                     uninfected_index = GameBoard.adjacent_noninfected_index(player_loc)
                     for uninfected_person in uninfected_index:
@@ -208,7 +208,9 @@ def display_finish_screen():
 
 
 def reward(old_board, new_board, action):
-    # This is the all important reward function.
+    """
+    This is the all important reward function.
+    """
     r = -1
     if action[0] == "vaccinate":
         r = 10
@@ -220,31 +222,42 @@ def reward(old_board, new_board, action):
 
 
 def convert_to_action(num):
-    l = []
+    """
+    Take a numerical action and returns the correspodning action as a string.
+    Returns False if not valid.
+    """
+    # First get the type of action
     if num < 4:
-        l.append("vaccinate")
+        this_action = ["vaccinate"]
     else:
-        l.append("move")
+        this_action = ["move"]
+    
+    # Now add the direction
     if num == 0 or num == 4:
-        l.append("left")
+        this_action.append("left")
     elif num == 1 or num == 5:
-        l.append("right")
+        this_action.append("right")
     elif num == 2 or num == 6:
-        l.append("up")
+        this_action.append("up")
     else:
-        l.append("down")
-    return l
+        this_action.append("down")
+    return this_action
 
 
-def greedy_epsilon(e, Q):
-    r = random.random()
-    if r < float(e):
-        c = random.choice(Q)
+def greedy_epsilon(epsilon, QTable_at_curr_position):
+    """
+    Implements the greedy epsilon algorithm to choose which action to take next.
+    """
+    if random.random() > float(epsilon):
+        max_Q = random.choice(QTable_at_curr_position)
     else:
-        c = max(Q)
-    c = Q.index(c)
-    return convert_to_action(c), c
+        max_Q = max(QTable_at_curr_position)
+    choice = QTable_at_curr_position.index(max_Q)
+    return convert_to_action(choice), choice
 
 
 def update_Q_value(cQ, learn, reward, discount, maxnewQ):
+    """
+    
+    """
     return cQ + learn * (reward + discount * maxnewQ - cQ)

@@ -6,14 +6,14 @@ import random as rd
 import copy
 
 # Constants
-HUMAN_PLAY = False
+HUMAN_PLAY = True
 SHOW_EVERY_FRAME = False       # Will show each action taken by AI if True. Shows only last frame if False.
 ROWS = 30
 COLUMNS = 30
 OFFSET = 50                    # Number of pixels to offset grid to the top-left side
 CELL_DIMENSIONS = 20           # Number of pixels for each cell
 DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
-SHOW_EPSILON_GRAPH = True
+SHOW_EPSILON_GRAPH = False
 USE_STATE_QTABLE = False
 
 if not HUMAN_PLAY:
@@ -35,7 +35,7 @@ epsilon = 0.8     # the percent of time to take the best action (instead of rand
 if HUMAN_PLAY:
     episodes = 1
 else:
-    episodes = 100    # Number of episodes to run reinforcement learning
+    episodes = 1    # Number of episodes to run reinforcement learning
 Original_Board = copy.deepcopy(GameBoard)
 
 
@@ -48,6 +48,7 @@ if SHOW_EPSILON_GRAPH:
     ax.set_ylabel("mean survival")
     epsilon_range = range(0, 11)
 else:
+    # this uses the epsilon setting from above
     epsilon_range = range(int(epsilon * 10), int((epsilon * 10) + 1))
 
 # Load images
@@ -84,6 +85,10 @@ for epsilon_inc in epsilon_range:
         
         running = True
         while running:
+            
+            # Allows the pygame window to be moved during execution without freezing
+            pygame.event.pump()
+            
             # Update the display
             if HUMAN_PLAY or SHOW_EVERY_FRAME:
                 PF.run(GameBoard)
@@ -174,8 +179,7 @@ for epsilon_inc in epsilon_range:
                             QTable[player_ind][choice]
                         )
                         player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
-                # Using the new Q learning
-                else:
+                else:   # Using the new Q learning
                     l = GameBoard.sense_nearby()
                     player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
                     while player_action not in possible_moves:
@@ -188,7 +192,8 @@ for epsilon_inc in epsilon_range:
                             max(QTable2[l[0]][l[1]][l[2]][l[3]])
                         )
                         player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
-
+                        
+                        
                 player_moved = True
             
             # If the player or AI has selected an action, then the simulation can advance one step
@@ -247,8 +252,10 @@ for epsilon_inc in epsilon_range:
     epsilon_list.append(epsilon)
     survivor_list.append(sum(survivors) / len(survivors))
 
-print(QTable2)
-print()
+#print(QTable2)
+
+print(QTable2['X']['V']['E']['E'])
+
 print(f"Mean # of surviving people was {sum(survivors) / len(survivors)}.")
 
 if SHOW_EPSILON_GRAPH:

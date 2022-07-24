@@ -100,14 +100,14 @@ def get_possible_moves(GameBoard, player_coor, include_vaccinate):
     return possible_moves
 
 
-def run(GameBoard):
+def run(GameBoard, episodes_ran):
     """
     Draw the screen and return any events.
     """
     screen.fill(BACKGROUND)
     build_grid(GameBoard) # Draw the grid
     display_people(GameBoard)
-    display_stats(GameBoard)
+    display_stats(GameBoard, episodes_ran)
 
 
 def build_grid(GameBoard):
@@ -192,7 +192,8 @@ def progress_infection(GameBoard, days_to_death):
                     GameBoard.death(person.location, person.index)
 
 
-def display_stats(GameBoard):
+def display_stats(GameBoard, episodes_ran):
+    screen.blit(font.render(f"Episode Number: {episodes_ran}", True, WHITE), (800, 375))
     screen.blit(font.render(f"Initial population: {GameBoard.population_initial}", True, WHITE), (800, 400))
     screen.blit(font.render(f"Current population: {GameBoard.population}", True, WHITE), (800, 425))
     screen.blit(font.render(f"Total infected: {GameBoard.num_infected()}", True, WHITE), (800, 450))
@@ -221,6 +222,15 @@ def reward(old_board, new_board, action):
     #reward -= 3 * (new_board.population_initial - new_board.population - old_board.population_initial + old_board.population)
     
     return reward
+
+def reward2(action, board):
+    reward = 0
+    if action[0] == "vaccinate":
+        reward = 1000
+    #reward -= board.num_infected() + 2 * (board.population - board.population_initial)
+
+    return reward
+
 
 def convert_to_action(num):
     """

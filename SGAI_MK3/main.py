@@ -1,4 +1,3 @@
-import random
 import sys
 import pygame
 from Board import Board
@@ -7,14 +6,15 @@ import random as rd
 import copy
 
 # Constants
-HUMAN_PLAY = True
+HUMAN_PLAY = False
 SHOW_EVERY_FRAME = False       # Will show each action taken by AI if True. Shows only last frame if False.
 ROWS = 30
 COLUMNS = 30
 OFFSET = 50                    # Number of pixels to offset grid to the top-left side
 CELL_DIMENSIONS = 20           # Number of pixels for each cell
 DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
-SHOW_EPSILON_GRAPH = False
+SHOW_EPSILON_GRAPH = True
+USE_STATE_QTABLE = False
 
 if not HUMAN_PLAY:
     rd.seed(1)
@@ -31,29 +31,14 @@ GameBoard.populate()
 # Self play variables
 alpha = 0.9       # learning rate:   the rate that the AI learns
 gamma = 0.9       # discount factor: discount for future rewards
-epsilon = 1.0     # the percent of time to take the best action (instead of random)
+epsilon = 0.8     # the percent of time to take the best action (instead of random)
 if HUMAN_PLAY:
     episodes = 1
 else:
     episodes = 100    # Number of episodes to run reinforcement learning
 Original_Board = copy.deepcopy(GameBoard)
-QTable = []       # To be used for reinforcement learning
-for s in range(ROWS * COLUMNS):
-    QTable.append([0] * 8)  # (4 x move) + (4 x vaccinate)
 
-# up, right, down, left
-possible_entries = ['V','U','X','I','E']
-QTable2 = {}
-for a in possible_entries:              # up
-    QTable2[a] = {}
-    for b in possible_entries:          # right
-        QTable2[a][b] = {}
-        for c in possible_entries:      # down
-            QTable2[a][b][c] = {}
-            for d in possible_entries:  # left
-                QTable2[a][b][c][d] = [0] * 8
 
-epsilon_range = range(10,11)
 epsilon_list = []
 survivor_list = []
 if SHOW_EPSILON_GRAPH:
@@ -61,6 +46,9 @@ if SHOW_EPSILON_GRAPH:
     fig, ax = plt.subplots()
     ax.set_xlabel("epsilon (random)")
     ax.set_ylabel("mean survival")
+    epsilon_range = range(0, 11)
+else:
+    epsilon_range = range(int(epsilon * 10), int((epsilon * 10) + 1))
 
 # Load images
 PF.load_images(GameBoard)
@@ -68,7 +56,22 @@ PF.load_images(GameBoard)
 for epsilon_inc in epsilon_range:
     epsilon = float(epsilon_inc) / 10
     print(f"Trying epsilon of {epsilon}")
-    
+
+    # Reset the Q Table between runs
+    QTable = []  # To be used for reinforcement learning
+    for s in range(ROWS * COLUMNS):
+        QTable.append([0] * 8)  # (4 x move) + (4 x vaccinate)
+    possible_entries = ['V', 'U', 'X', 'I', 'E']
+    QTable2 = {}
+    for a in possible_entries:  # up
+        QTable2[a] = {}
+        for b in possible_entries:  # right
+            QTable2[a][b] = {}
+            for c in possible_entries:  # down
+                QTable2[a][b][c] = {}
+                for d in possible_entries:  # left
+                    QTable2[a][b][c][d] = [0] * 8
+
     episodes_ran = 0
     survivors = []
     while episodes > episodes_ran:
@@ -158,7 +161,7 @@ for epsilon_inc in epsilon_range:
                 # Otherwise, use reinforcement learning to select an action
                 if len(possible_moves) == 1:
                     player_action = ["pass"]
-                else:
+                elif USE_STATE_QTABLE:
                     # Select one of the possible moves using the greedy epsilon method and set it in player_action
                     player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
                     while player_action not in possible_moves:
@@ -171,7 +174,21 @@ for epsilon_inc in epsilon_range:
                             QTable[player_ind][choice]
                         )
                         player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
-                
+                # Using the new Q learning
+                else:
+                    l = GameBoard.sense_nearby()
+                    player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
+                    while player_action not in possible_moves:
+                        reward = -100
+                        QTable2[l[0]][l[1]][l[2]][l[3]][choice] = PF.update_Q_value(
+                            QTable2[l[0]][l[1]][l[2]][l[3]][choice],
+                            alpha,
+                            reward,
+                            gamma,
+                            max(QTable2[l[0]][l[1]][l[2]][l[3]])
+                        )
+                        player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
+
                 player_moved = True
             
             # If the player or AI has selected an action, then the simulation can advance one step
@@ -184,33 +201,42 @@ for epsilon_inc in epsilon_range:
                     GameBoard.move(player_action[1], player_loc, True)
                 elif player_action[0] == "vaccinate":
                     GameBoard.vaccinate(player_action[1], player_loc)
-                
-                # If the AI is playing, then implement reinforcement learning
-                if not HUMAN_PLAY:
-                    # Figure out the reward for the action selected
-                    #reward = PF.reward(oldGameboard, GameBoard, player_action)
-                    reward = PF.reward(GameBoard, GameBoard, player_action)
-                    
-                    # Update the Q-Table
-                    # player_ind is the location of the player at the old location
-                    QTable[player_ind][choice] = PF.update_Q_value(
-                        QTable[player_ind][choice],
-                        alpha,
-                        reward,
-                        gamma,
-                        max(GameBoard.QTable[GameBoard.state[GameBoard.govt_index].location])
-                    )
-                
+
                 # Allow all the people in the simulation to have a turn now
                 PF.simulate(GameBoard)
-                
+
                 # People die!
                 PF.progress_infection(GameBoard, DAYS_TO_DEATH)
+
+                # If the AI is playing, then implement reinforcement learning
+                if not HUMAN_PLAY:
+                    if USE_STATE_QTABLE:
+                        # Figure out the reward for the action selected
+                        #reward = PF.reward(oldGameboard, GameBoard, player_action)
+                        reward = PF.reward(GameBoard, GameBoard, player_action)
+                        # Update the Q-Table
+                        # player_ind is the location of the player at the old location
+                        QTable[player_ind][choice] = PF.update_Q_value(
+                            QTable[player_ind][choice],
+                            alpha,
+                            reward,
+                            gamma,
+                            max(QTable[GameBoard.state[GameBoard.govt_index].location])
+                        )
+                    else:
+                        reward = PF.reward2(player_action, GameBoard)
+                        new = GameBoard.sense_nearby()
+                        QTable2[l[0]][l[1]][l[2]][l[3]][choice] = PF.update_Q_value(
+                            QTable2[l[0]][l[1]][l[2]][l[3]][choice],
+                            alpha,
+                            reward,
+                            gamma,
+                            max(QTable2[new[0]][new[1]][new[2]][new[3]]))
                 
                 # Check for end conditions
                 if GameBoard.num_infected() == 0:   # There are no infected people left
                     #if HUMAN_PLAY or episodes_ran % 100 == 0 or episodes_ran == episodes:
-                    PF.run(GameBoard)
+                    PF.run(GameBoard, episodes_ran)
                     PF.display_finish_screen()
                     survivors.append(GameBoard.population)
                     running = False
@@ -221,7 +247,7 @@ for epsilon_inc in epsilon_range:
     epsilon_list.append(epsilon)
     survivor_list.append(sum(survivors) / len(survivors))
 
-print(QTable)
+print(QTable2)
 print()
 print(f"Mean # of surviving people was {sum(survivors) / len(survivors)}.")
 

@@ -245,7 +245,6 @@ def convert_to_action(num):
     
     return this_action
 
-
 def greedy_epsilon(epsilon, QTable_at_curr_position):
     """
     Implements the greedy epsilon algorithm to choose which action to take next.
@@ -256,7 +255,6 @@ def greedy_epsilon(epsilon, QTable_at_curr_position):
         max_Q = max(QTable_at_curr_position)
     choice = QTable_at_curr_position.index(max_Q)
     return convert_to_action(choice), choice
-
 
 def update_Q_value(old_Q, learn, reward, discount_factor, max_new_Q):
     """

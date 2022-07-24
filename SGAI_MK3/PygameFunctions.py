@@ -72,6 +72,7 @@ def get_possible_moves(GameBoard, player_coor, include_vaccinate):
     If include_vaccinate is True, then also check if vaccination is an option. If the space is not empty AND the person is not vaccinated, then add the ["vaccinate",direction] to the list.
     """
     possible_moves = []
+    possible_moves.append(["pass"])
     if player_coor[0] > 0:
         if GameBoard.state[GameBoard.toIndex([player_coor[0] - 1, player_coor[1]])] == None:
             possible_moves.append(["move", "left"])
@@ -227,10 +228,13 @@ def convert_to_action(num):
     Returns False if not valid.
     """
     # First get the type of action
-    if num < 4:
+    if num < 4:     # 0,1,2,3
         this_action = ["vaccinate"]
-    else:
+    elif num < 8:    # 4,5,6,7
         this_action = ["move"]
+    else:           # 8
+        this_action = ["pass"]
+        print("pass selected")
     
     # Now add the direction
     if num == 0 or num == 4:
@@ -239,8 +243,9 @@ def convert_to_action(num):
         this_action.append("right")
     elif num == 2 or num == 6:
         this_action.append("up")
-    else:
+    elif num == 3 or num == 7:
         this_action.append("down")
+    
     return this_action
 
 

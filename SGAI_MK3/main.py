@@ -37,7 +37,7 @@ episodes_ran = 0
 Original_Board = copy.deepcopy(GameBoard)
 QTable = []  # To be used for reinforcement learning
 for s in range(ROWS * COLUMNS):
-    QTable.append([0] * 8)
+    QTable.append([0] * 9)  # (4 x move) + (4 x vaccinate) + pass
 
 # Load images
 PF.load_images(GameBoard)
@@ -81,6 +81,8 @@ while episodes > episodes_ran:
                                 player_action.append("down")
                             elif player_loc[1] == (grid_location_clicked[1] + 1):
                                 player_action.append("up")
+                            elif player_loc[1] == grid_location_clicked[1]:
+                                player_action = ["pass"]    # Overwrites the ["move"] currently in player_action
                         elif player_loc[1] == grid_location_clicked[1]:
                             if player_loc[0] == (grid_location_clicked[0] - 1):
                                 player_action.append("right")
@@ -103,6 +105,8 @@ while episodes > episodes_ran:
                         player_action = ["move", "left"]
                     elif event.key == pygame.K_RIGHT:
                         player_action = ["move", "right"]
+                    elif event.key == pygame.K_SPACE:
+                        player_action = ["pass"]
                     elif event.key == pygame.K_ESCAPE:
                         running = False
                     
@@ -140,22 +144,23 @@ while episodes > episodes_ran:
             oldGameboard = copy.deepcopy(GameBoard)
             
             # Implement the player's action
+            # Doesn't check for "pass" since nothing needs to change
             if player_action[0] == "move":
                 GameBoard.move(player_action[1], player_loc, True)
             elif player_action[0] == "vaccinate":
                 GameBoard.vaccinate(player_action[1], player_loc)
-
+            
             # Allow all the people in the simulation to have a turn now
             PF.simulate(GameBoard)
-
+            
             # People die!
             PF.progress_infection(GameBoard, DAYS_TO_DEATH)
-
+            
             if not HUMAN_PLAY:
                 reward = PF.reward(oldGameboard, GameBoard, player_action)
                 QTable[player_ind][choice] = PF.update_Q_value(
                     QTable[player_ind][choice], alpha, reward, gamma, max(GameBoard.QTable[GameBoard.state[GameBoard.govt_index].location]))
-
+            
             # Check for end conditions
             if GameBoard.num_infected() == 0:   # There are no infected people left
                 if HUMAN_PLAY or episodes_ran % 100 == 0:

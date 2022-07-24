@@ -35,6 +35,7 @@ epsilon = 0.9     # the percent of time to take the best action (instead of rand
 episodes = 100    # Number of episodes to run reinforcement learning
 episodes_ran = 0
 Original_Board = copy.deepcopy(GameBoard)
+survivors = []
 QTable = []       # To be used for reinforcement learning
 for s in range(ROWS * COLUMNS):
     QTable.append([0] * 8)  # (4 x move) + (4 x vaccinate)
@@ -191,9 +192,12 @@ while episodes > episodes_ran:
                 #if HUMAN_PLAY or episodes_ran % 100 == 0 or episodes_ran == episodes:
                 PF.run(GameBoard)
                 PF.display_finish_screen()
+                survivors.append(GameBoard.population)
                 running = False
             
-            del oldGameboard
+            #del oldGameboard
             
 print(QTable)
+print()
+print(f"Mean # of surviving people was {sum(survivors) / len(survivors)}.")
 input("Enter anything to continue.")

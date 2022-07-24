@@ -56,12 +56,6 @@ class Board:
             and coordinates[0] < self.columns
             and coordinates[0] >= 0)
 
-    def clone(self):
-        new_board = Board((self.rows, self.columns), self.offset, self.cell_size, self.player_role)
-        new_board.state = self.people.copy()
-        new_board.population_initial = self.population_initial
-        return new_board
-
     def isAdjacentTo(self, coord, is_infected: bool):
         ret = False
         vals = [

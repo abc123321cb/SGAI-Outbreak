@@ -10,6 +10,7 @@ import copy
 
 # Constants
 HUMAN_PLAY = False
+SHOW_EVERY_FRAME = False       # Will show each action taken by AI if True. Shows only last frame if False.
 ROWS = 30
 COLUMNS = 30
 OFFSET = 50                    # Number of pixels to offset grid to the top-left side
@@ -56,7 +57,7 @@ while episodes > episodes_ran:
     while running:
         
         # Update the display
-        if HUMAN_PLAY or episodes == episodes_ran:
+        if HUMAN_PLAY or SHOW_EVERY_FRAME:
             PF.run(GameBoard)
             pygame.display.update()
         
@@ -136,7 +137,6 @@ while episodes > episodes_ran:
             else:
                 # Select one of the possible moves using the greedy epsilon method and set it in player_action
                 player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
-                
                 while player_action not in possible_moves:
                     reward = -1000
                     QTable[GameBoard.govt_index][choice] = PF.update_Q_value(

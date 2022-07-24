@@ -90,7 +90,7 @@ while episodes > episodes_ran:
                                 player_action.append("right")
                             elif player_loc[0] == (grid_location_clicked[0] + 1):
                                 player_action.append("left")
-
+                        
                         # Determine set of possible moves given current state
                         possible_moves = PF.get_possible_moves(GameBoard, player_loc, True)
                         
@@ -154,7 +154,7 @@ while episodes > episodes_ran:
         
         # If the player or AI has selected an action, then the simulation can advance one step
         if player_moved:   
-            oldGameboard = copy.deepcopy(GameBoard)
+            #oldGameboard = copy.deepcopy(GameBoard)
             
             # Implement the player's action
             # Doesn't check for "pass" since nothing needs to change
@@ -166,7 +166,8 @@ while episodes > episodes_ran:
             # If the AI is playing, then implement reinforcement learning
             if not HUMAN_PLAY:
                 # Figure out the reward for the action selected
-                reward = PF.reward(oldGameboard, GameBoard, player_action)
+                #reward = PF.reward(oldGameboard, GameBoard, player_action)
+                reward = PF.reward(GameBoard, GameBoard, player_action)
                 
                 # Update the Q-Table
                 # player_ind is the location of the player at the old location

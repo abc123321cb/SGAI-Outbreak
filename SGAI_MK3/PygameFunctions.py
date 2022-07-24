@@ -207,14 +207,20 @@ def reward(old_board, new_board, action):
     """
     This is the all important reward function.
     """
-    r = -1
+    # The default reward is -1
+    reward = -1
+    
+    # Reward for vaccinating this turn
     if action[0] == "vaccinate":
-        r = 10
-
-    r += old_board.num_infected() - new_board.num_infected()
-    r -= 3 * (new_board.population_initial - new_board.population - old_board.population_initial + old_board.population)
-
-    return r
+        reward = 10
+    
+    # Return for having less infected people
+    #reward += old_board.num_infected() - new_board.num_infected()
+    
+    # Negative reward if the population goes down
+    #reward -= 3 * (new_board.population_initial - new_board.population - old_board.population_initial + old_board.population)
+    
+    return reward
 
 def convert_to_action(num):
     """

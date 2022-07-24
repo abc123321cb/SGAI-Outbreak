@@ -37,7 +37,7 @@ episodes_ran = 0
 Original_Board = copy.deepcopy(GameBoard)
 QTable = []       # To be used for reinforcement learning
 for s in range(ROWS * COLUMNS):
-    QTable.append([0] * 9)  # (4 x move) + (4 x vaccinate) + pass
+    QTable.append([0] * 8)  # (4 x move) + (4 x vaccinate)
 
 # Load images
 PF.load_images(GameBoard)
@@ -69,14 +69,14 @@ while episodes > episodes_ran:
                     button_pressed = event.button
                     player_loc = GameBoard.toCoord(GameBoard.state[GameBoard.govt_index].location)
                     grid_location_clicked = PF.get_grid_clicked(GameBoard, x, y)
-
+                    
                     if grid_location_clicked:   # Only proceed if a valid grid cell was clicked
                         # Determine the type of activity the user intends
                         if button_pressed == 1:     # Left mouse button
                             player_action = ["move"]
                         elif button_pressed == 3:   # Right mouse button
                             player_action = ["vaccinate"]
-
+                        
                         # Figure out which way the user clicked relative to the government player
                         if player_loc[0] == grid_location_clicked[0]:
                             if player_loc[1] == (grid_location_clicked[1] - 1):
@@ -93,11 +93,11 @@ while episodes > episodes_ran:
 
                         # Determine set of possible moves given current state
                         possible_moves = PF.get_possible_moves(GameBoard, player_loc, True)
-
+                        
                         # Check if the move is valid
                         if player_action in possible_moves:
                             player_moved = True
-
+                
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
                         player_action = ["move", "up"]
@@ -115,7 +115,7 @@ while episodes > episodes_ran:
                     # Determine set of possible moves given current state
                     player_loc = GameBoard.toCoord(GameBoard.state[GameBoard.govt_index].location)
                     possible_moves = PF.get_possible_moves(GameBoard, player_loc, True)
-
+                    
                     # Check if the move is valid
                     if player_action in possible_moves:
                         player_moved = True
@@ -128,21 +128,24 @@ while episodes > episodes_ran:
             player_ind = GameBoard.toIndex(player_loc)
             possible_moves = PF.get_possible_moves(GameBoard, player_loc, True)
             
-            # Select one of the possible moves using the greedy epsilon method and set it in player_action
-            player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
-            
-            while player_action not in possible_moves:
-                reward = -1000
-                QTable[GameBoard.govt_index][choice] = PF.update_Q_value(
-                    QTable[player_ind][choice],
-                    alpha,
-                    reward,
-                    gamma,
-                    QTable[player_ind][choice]
-                )
+            # If there are no possible actions other than passing, then pass
+            # Otherwise, use reinforcement learning to select an action
+            if len(possible_moves) == 1:
+                player_action = ["pass"]
+            else:
+                # Select one of the possible moves using the greedy epsilon method and set it in player_action
                 player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
-            
-            #print(player_action, possible_moves)
+                
+                while player_action not in possible_moves:
+                    reward = -1000
+                    QTable[GameBoard.govt_index][choice] = PF.update_Q_value(
+                        QTable[player_ind][choice],
+                        alpha,
+                        reward,
+                        gamma,
+                        QTable[player_ind][choice]
+                    )
+                    player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
             #time.sleep(3)
             
             player_moved = True

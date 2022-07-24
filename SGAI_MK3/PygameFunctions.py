@@ -226,8 +226,6 @@ def convert_to_action(num):
         this_action = ["vaccinate"]
     elif num < 8:    # 4,5,6,7
         this_action = ["move"]
-    else:           # 8
-        this_action = ["pass"]
     
     # Now add the direction
     if num == 0 or num == 4:

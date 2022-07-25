@@ -14,12 +14,14 @@ COLUMNS = 30
 OFFSET = 50                    # Number of pixels to offset grid to the top-left side
 CELL_DIMENSIONS = 20           # Number of pixels for each cell
 DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
-SHOW_EPSILON_GRAPH = False
+SHOW_EPSILON_GRAPH = True
 USE_STATE_QTABLE = False
 EXIT_POINTS = 3
 
 if not HUMAN_PLAY:
-    rd.seed(1)
+    #rd.seed(1)
+    #import scikit
+    pass
 
 # Player role variables
 player_role = "Government"      # Valid options are "Government" and "Zombie"
@@ -98,7 +100,7 @@ for epsilon_inc in epsilon_range:
             
             # Update the display
             if HUMAN_PLAY or SHOW_EVERY_FRAME:
-                PF.run(GameBoard)
+                PF.run(GameBoard, ExitPoints)
                 pygame.display.update()
             
             # Get the (human or AI) player's intention for their turn

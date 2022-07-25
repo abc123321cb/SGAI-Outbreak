@@ -6,6 +6,7 @@ import random as rd
 BACKGROUND = "#DDC2A1"
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+GREEN = (43, 228, 98)
 CELL_COLOR = (40, 40, 40)
 LINE_WIDTH = 1
 
@@ -100,13 +101,13 @@ def get_possible_moves(GameBoard, player_coor, include_vaccinate):
     return possible_moves
 
 
-def run(GameBoard, episodes_ran = False):
+def run(GameBoard, exitpoints, episodes_ran = False):
     """
     Draw the screen and return any events.
     """
     screen.fill(BACKGROUND)
     build_grid(GameBoard) # Draw the grid
-    display_people(GameBoard)
+    display_people(GameBoard, exitpoints)
     display_stats(GameBoard, episodes_ran)
 
 
@@ -133,10 +134,15 @@ def build_grid(GameBoard):
         i += GameBoard.cell_size
 
 
-def display_people(GameBoard):
+def display_people(GameBoard, exitpoints):
     """
     Draw the people on the screen.
     """
+    for exits in exitpoints:
+        curr_coor = GameBoard.toCoord(exits.location)
+        pygame.draw.rect(screen, GREEN, [GameBoard.offset + curr_coor[0] * GameBoard.cell_size,
+                                         GameBoard.offset + curr_coor[1] * GameBoard.cell_size, GameBoard.cell_size,
+                                         GameBoard.cell_size])
     for person in GameBoard.people:
         if person != None:
             coords = (

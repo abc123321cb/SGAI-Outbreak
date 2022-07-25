@@ -144,6 +144,8 @@ def display_people(GameBoard):
                 GameBoard.toCoord(person.location)[1] * GameBoard.cell_size + GameBoard.offset + 0.1 * GameBoard.cell_size
             )
             if person.isGovt:
+                curr_coor = GameBoard.toCoord(person.location)
+                pygame.draw.rect(screen, WHITE, [GameBoard.offset + curr_coor[0] * GameBoard.cell_size, GameBoard.offset + curr_coor[1] * GameBoard.cell_size, GameBoard.cell_size, GameBoard.cell_size])
                 screen.blit(img_player_govt, coords)
             elif person.condition == "Healthy":
                 screen.blit(img_player_healthy, coords)

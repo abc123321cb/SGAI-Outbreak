@@ -249,8 +249,8 @@ for epsilon_inc in epsilon_range:
                 #create an empty "amount" variable to store the amount of people who exited this round
                 AmountExited = 0
                 for Exit in ExitPoints:
-                    AmountExited += Exit.CheckPersonExit(GameBoard.people) #returns a "1" if someone exited, returns a 0 if no one was in exit
-            
+                    AmountExited += Exit.CheckPersonExit(GameBoard.people, GameBoard) #returns a "1" if someone exited, returns a 0 if no one was in exit
+
 
                 # Check for end conditions
                 if GameBoard.num_infected() == 0:   # There are no infected people left

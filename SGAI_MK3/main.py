@@ -100,11 +100,6 @@ for epsilon_inc in epsilon_range:
             # Allows the pygame window to be moved during execution without freezing
             pygame.event.pump()
             
-            # Update the display
-            if HUMAN_PLAY or SHOW_EVERY_FRAME:
-                PF.run(GameBoard, ExitPoints)
-                pygame.display.update()
-            
             if game_active:
                 # Allows the pygame window to be moved during execution without freezing
                 pygame.event.pump()

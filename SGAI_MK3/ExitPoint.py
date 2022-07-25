@@ -4,14 +4,14 @@ class ExitPoint:
         self.location = location #assigning location; exit point does not need 'conditions'
     
     def CheckPeopleExited(self, PersonSet, GameBoard):
-        Amount = 0 #setting a counter of people who have exited
+        PersonExited = 0 #setting a counter of people who have exited
         for Person in PersonSet: #iterating through each person in the set
             if Person.location == self.location and Person.isInfected != True: #check if they're not infected and are in the exit point
-                Amount += 1 #add to counter
+                PersonExited += 1 #add to counter
                 GameBoard.Death(Person.location, Person.index) #"death" event to remove them from board
-                return Amount #return the amount
-                #only one person can be at the tile at once, so 
-        return Amount #return the amount
+                return PersonExited #return the amount, early return since no one else could be in the tile
+                #only one person can be at the tile at once, so there is no need to remove it 
+        return PersonExited #return the amount
  
 
 

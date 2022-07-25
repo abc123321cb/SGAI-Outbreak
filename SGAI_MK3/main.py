@@ -4,6 +4,7 @@ from Board import Board
 import PygameFunctions as PF
 import random as rd
 import copy
+from ExitPoint import ExitPoint
 
 # Constants
 HUMAN_PLAY = True
@@ -15,6 +16,7 @@ CELL_DIMENSIONS = 20           # Number of pixels for each cell
 DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
 SHOW_EPSILON_GRAPH = False
 USE_STATE_QTABLE = False
+EXIT_POINTS = 3
 
 if not HUMAN_PLAY:
     rd.seed(1)
@@ -27,6 +29,12 @@ roleToRoleBoolean = {"Government": False, "Zombie": True}
 # Create the game board
 GameBoard = Board((ROWS, COLUMNS), OFFSET, CELL_DIMENSIONS, roleToRoleNum[player_role])
 GameBoard.populate()
+
+#create exit points and assign them locations
+ExitPoints = [] #create list of Exit Points
+for i in range(EXIT_POINTS): #create the amount of points specified by the EXIT_POINTS constant
+    ExitPoints.append(ExitPoint(rd.randint(0, int(ROWS * COLUMNS) - 1))) #create exit point with random location on the board
+#ExitPoints is now the list with all of the ExitPoint objects
 
 # Self play variables
 alpha = 0.2       # learning rate:   the rate that the AI learns
@@ -237,6 +245,13 @@ for epsilon_inc in epsilon_range:
                             gamma,
                             max(QTable2[new[0]][new[1]][new[2]][new[3]]))
                 
+                #iterate through eache xitpoint to check if a person is inside of them
+                #create an empty "amount" variable to store the amount of people who exited this round
+                AmountExited = 0
+                for Exit in ExitPoints:
+                    AmountExited += Exit.CheckPersonExit(GameBoard.people) #returns a "1" if someone exited, returns a 0 if no one was in exit
+            
+
                 # Check for end conditions
                 if GameBoard.num_infected() == 0:   # There are no infected people left
                     #if HUMAN_PLAY or episodes_ran % 100 == 0 or episodes_ran == episodes:

@@ -6,8 +6,11 @@ import random as rd
 BACKGROUND = "#DDC2A1"
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+DARK_GRAY = "#4C4E52"
 CELL_COLOR = (40, 40, 40)
 LINE_WIDTH = 1
+WIDTH, HEIGHT = 1200, 700
 
 # Initialize pygame
 pygame.init()
@@ -22,6 +25,36 @@ img_player_govt = None
 img_player_healthy = None
 img_player_vaccinated = None
 img_player_infected = None
+
+# Load menu screen surfaces and text
+game_title_text = pygame.font.Font("Assets/title_font.ttf", 120)
+title_surf = game_title_text.render("RESCUE!", False, RED)
+title_rect = title_surf.get_rect(center = (600, 300))
+menu_text = pygame.font.Font("Assets/menu_font.ttf", 40)
+menu_surf = menu_text.render("Press space to begin", False, BLACK)
+menu_rect = menu_surf.get_rect(center = (600, 450))
+settings_surf = menu_text.render("Settings", False, BLACK)
+settings_rect = settings_surf.get_rect(topright = (1150, 25))
+
+# Load title screen background
+title_background = pygame.image.load("Assets/map_background.jpeg").convert_alpha()
+title_background_rect = title_background.get_rect(center = (600, 350))
+
+# Load settings screen surfaces and text
+checkmark_text = pygame.font.Font("Assets/title_font.ttf", 60)
+player_role_surf = menu_text.render("Player", False, BLACK)
+player_role_rect = player_role_surf.get_rect(center = (300, 200))
+AI_surf = menu_text.render("AI Model", False, BLACK)
+AI_rect = AI_surf.get_rect(center = (WIDTH - 300, 200))
+AI_box = pygame.Rect(WIDTH - 265 - AI_rect.width, 190, 20, 20)
+human_surf = menu_text.render("Human Player", False, BLACK)
+human_rect = human_surf.get_rect(center = (WIDTH - 300 - AI_rect.width - 100, 200))
+human_box = pygame.Rect(human_rect.x - 30, 190, 20, 20)
+checkmark_box = checkmark_text.render("X", False, RED)
+AI_text_rect = checkmark_box.get_rect(center = (WIDTH - 255 - AI_rect.width, 205))
+human_text_rect = checkmark_box.get_rect(center = (human_rect.x - 20, 205))
+back_surf = menu_text.render("Back", False, BLACK)
+back_rect = back_surf.get_rect(topleft = (50, 25))
 
 
 def load_images(GameBoard):
@@ -277,3 +310,29 @@ def update_Q_value(old_Q, learn, reward, discount_factor, max_new_Q):
     """
     temporal_difference = reward + (discount_factor * max_new_Q) - old_Q
     return old_Q + (learn * temporal_difference)
+
+def main_screen():
+    screen.blit(title_background, title_background_rect)
+    screen.blit(title_surf, title_rect)
+    screen.blit(menu_surf, menu_rect)
+    screen.blit(settings_surf, settings_rect)
+    
+    pygame.display.update()
+    
+    
+def settings_screen(HUMAN_PLAY):
+    screen.blit(title_background, title_background_rect)
+    screen.blit(player_role_surf, player_role_rect)
+    screen.blit(human_surf, human_rect)
+    screen.blit(AI_surf, AI_rect)
+    pygame.draw.rect(screen, DARK_GRAY, AI_box, 3)
+    pygame.draw.rect(screen, DARK_GRAY, human_box, 3)
+    screen.blit(back_surf, back_rect)
+    
+    if HUMAN_PLAY:
+        screen.blit(checkmark_box, human_text_rect)
+        
+    else:
+        screen.blit(checkmark_box, AI_text_rect)
+    
+    pygame.display.update()

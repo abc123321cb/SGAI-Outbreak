@@ -6,7 +6,7 @@ class ExitPoint:
     def CheckPeopleExited(self, PersonSet, GameBoard):
         PersonExited = 0 #setting a counter of people who have exited
         for Person in PersonSet: #iterating through each person in the set
-            if Person != None and Person.location == self.location and Person.isInfected != True: #check if they're not infected and are in the exit point
+            if Person != None and Person.location == self.location and Person.isInfected != True and Person.isGovt != True: #check if they're not infected and are in the exit point
                 PersonExited += 1 #add to counter
                 GameBoard.death(Person.location, Person.index) #"death" event to remove them from board
                 return PersonExited #return the amount, early return since no one else could be in the tile

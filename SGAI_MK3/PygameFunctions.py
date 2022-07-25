@@ -101,14 +101,14 @@ def get_possible_moves(GameBoard, player_coor, include_vaccinate):
     return possible_moves
 
 
-def run(GameBoard, exitpoints, episodes_ran = False):
+def run(GameBoard, exitpoints, amount_exited, episodes_ran = False):
     """
     Draw the screen and return any events.
     """
     screen.fill(BACKGROUND)
     build_grid(GameBoard) # Draw the grid
     display_people(GameBoard, exitpoints)
-    display_stats(GameBoard, episodes_ran)
+    display_stats(GameBoard, amount_exited, episodes_ran)
 
 
 def build_grid(GameBoard):
@@ -200,13 +200,14 @@ def progress_infection(GameBoard, days_to_death):
                     GameBoard.death(person.location, person.index)
 
 
-def display_stats(GameBoard, episodes_ran):
+def display_stats(GameBoard, amount_exited, episodes_ran):
     if episodes_ran:
         screen.blit(font.render(f"Episode Number: {episodes_ran}", True, WHITE), (800, 375))
     screen.blit(font.render(f"Initial population: {GameBoard.population_initial}", True, WHITE), (800, 400))
     screen.blit(font.render(f"Current population: {GameBoard.population}", True, WHITE), (800, 425))
     screen.blit(font.render(f"Total infected: {GameBoard.num_infected()}", True, WHITE), (800, 450))
     screen.blit(font.render(f"Total vaccinated: {GameBoard.num_vaccinated()}", True, WHITE), (800, 475))
+    screen.blit(font.render(f"Total escaped: {amount_exited}", True, WHITE), (800, 500))
 
 def display_finish_screen():
     screen.blit(font.render("SIMULATION OVER.", True, WHITE), (800, 300))

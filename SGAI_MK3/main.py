@@ -14,7 +14,7 @@ COLUMNS = 30
 OFFSET = 50                    # Number of pixels to offset grid to the top-left side
 CELL_DIMENSIONS = 20           # Number of pixels for each cell
 DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
-SHOW_EPSILON_GRAPH = True
+SHOW_EPSILON_GRAPH = False
 USE_STATE_QTABLE = False
 EXIT_POINTS = 3
 
@@ -93,6 +93,8 @@ for epsilon_inc in epsilon_range:
             print(f"  Episode #{episodes_ran} ended with {GameBoard.population} alive.")
             GameBoard = copy.deepcopy(Original_Board)
         
+        AmountExited = 0
+        
         running = True
         while running:
             # Allows the pygame window to be moved during execution without freezing
@@ -100,7 +102,7 @@ for epsilon_inc in epsilon_range:
             
             # Update the display
             if HUMAN_PLAY or SHOW_EVERY_FRAME:
-                PF.run(GameBoard, ExitPoints)
+                PF.run(GameBoard, ExitPoints, AmountExited)
                 pygame.display.update()
             
             # Get the (human or AI) player's intention for their turn
@@ -247,17 +249,15 @@ for epsilon_inc in epsilon_range:
                             gamma,
                             max(QTable2[new[0]][new[1]][new[2]][new[3]]))
                 
-                #iterate through eache xitpoint to check if a person is inside of them
+                #iterate through each exitpoint to check if a person is inside of them
                 #create an empty "amount" variable to store the amount of people who exited this round
-                AmountExited = 0
                 for Exit in ExitPoints:
                     AmountExited += Exit.CheckPeopleExited(GameBoard.people, GameBoard) #returns a "1" if someone exited, returns a 0 if no one was in exit
-
 
                 # Check for end conditions
                 if GameBoard.num_infected() == 0:   # There are no infected people left
                     #if HUMAN_PLAY or episodes_ran % 100 == 0 or episodes_ran == episodes:
-                    PF.run(GameBoard, episodes_ran)
+                    PF.run(GameBoard, ExitPoints, AmountExited, episodes_ran)
                     PF.display_finish_screen()
                     survivors.append(GameBoard.population)
                     running = False

@@ -1,6 +1,6 @@
 class ExitPoint:
-    def __init__(self, this_index, location):
-        self.index = this_index #assigning it an index in case we want multiple exit points in future
+    def __init__(self, location):
+        #self.index index not necessary currently? all it needs is location
         self.location = location #assigning location; exit point does not need 'conditions'
     
     def CheckPeopleExited(self, PersonSet, GameBoard):

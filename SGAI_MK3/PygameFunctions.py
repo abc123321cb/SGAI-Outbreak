@@ -225,9 +225,9 @@ def reward(old_board, new_board, action):
     return reward
 
 def reward2(action, GameBoard):
-    reward = 0
+    reward = -1
     if action[0] == "vaccinate":
-        reward = 1000
+        reward = 100
     #reward -= GameBoard.num_infected() + 2 * (GameBoard.population - GameBoard.population_initial)
 
     return reward

@@ -29,13 +29,13 @@ GameBoard = Board((ROWS, COLUMNS), OFFSET, CELL_DIMENSIONS, roleToRoleNum[player
 GameBoard.populate()
 
 # Self play variables
-alpha = 0.9       # learning rate:   the rate that the AI learns
+alpha = 0.2       # learning rate:   the rate that the AI learns
 gamma = 0.9       # discount factor: discount for future rewards
 epsilon = 0.8     # the percent of time to take the best action (instead of random)
 if HUMAN_PLAY:
     episodes = 1
 else:
-    episodes = 1    # Number of episodes to run reinforcement learning
+    episodes = 100    # Number of episodes to run reinforcement learning
 Original_Board = copy.deepcopy(GameBoard)
 
 
@@ -85,7 +85,6 @@ for epsilon_inc in epsilon_range:
         
         running = True
         while running:
-            
             # Allows the pygame window to be moved during execution without freezing
             pygame.event.pump()
             
@@ -183,7 +182,7 @@ for epsilon_inc in epsilon_range:
                     l = GameBoard.sense_nearby()
                     player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
                     while player_action not in possible_moves:
-                        reward = -100
+                        reward = -1000
                         QTable2[l[0]][l[1]][l[2]][l[3]][choice] = PF.update_Q_value(
                             QTable2[l[0]][l[1]][l[2]][l[3]][choice],
                             alpha,
@@ -192,8 +191,8 @@ for epsilon_inc in epsilon_range:
                             max(QTable2[l[0]][l[1]][l[2]][l[3]])
                         )
                         player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
-                        
-                        
+                     
+                    
                 player_moved = True
             
             # If the player or AI has selected an action, then the simulation can advance one step
@@ -255,6 +254,10 @@ for epsilon_inc in epsilon_range:
 #print(QTable2)
 
 print(QTable2['X']['V']['E']['E'])
+#for a in possible_entries:
+#    for b in possible_entries:
+#        for c in possible_entries:
+#            print(QTable2[a][b][c]['X'][4])
 
 print(f"Mean # of surviving people was {sum(survivors) / len(survivors)}.")
 

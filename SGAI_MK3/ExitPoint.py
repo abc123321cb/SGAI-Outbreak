@@ -9,6 +9,8 @@ class ExitPoint:
             if Person.location == self.location and Person.isInfected != True: #check if they're not infected and are in the exit point
                 Amount += 1 #add to counter
                 GameBoard.Death(Person.location, Person.index) #"death" event to remove them from board
+                return Amount #return the amount
+                #only one person can be at the tile at once, so 
         return Amount #return the amount
  
 

@@ -12,9 +12,3 @@ class ExitPoint:
                 return PersonExited #return the amount, early return since no one else could be in the tile
                 #only one person can be at the tile at once, so there is no need to remove it 
         return PersonExited #return the amount
- 
-
-
-            
-    
-

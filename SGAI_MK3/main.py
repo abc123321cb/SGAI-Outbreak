@@ -15,13 +15,19 @@ OFFSET = 50                    # Number of pixels to offset grid to the top-left
 CELL_DIMENSIONS = 20           # Number of pixels for each cell
 DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
 SHOW_EPSILON_GRAPH = False
-USE_STATE_QTABLE = False
+AI_TYPE = "SENSE"              # Must be one of "STATE", "SENSE", "DEEP"
 EXIT_POINTS = 3
+ACTION_NUM = 8                 # The number of actions
 
 if not HUMAN_PLAY:
     #rd.seed(1)
-    #import scikit
     pass
+if AI_TYPE == "DEEP":
+    import DeepLearning
+    import numpy as np
+    import tensorflow as tf         #pip install tensorflow
+    from tensorflow import keras
+    from tensorflow.keras import layers
 
 # Player role variables
 player_role = "Government"      # Valid options are "Government" and "Zombie"
@@ -69,20 +75,26 @@ for epsilon_inc in epsilon_range:
     print(f"Trying epsilon of {epsilon}")
 
     # Reset the Q Table between runs
-    QTable = []  # To be used for reinforcement learning
-    for s in range(ROWS * COLUMNS):
-        QTable.append([0] * 8)  # (4 x move) + (4 x vaccinate)
-    possible_entries = ['V', 'U', 'X', 'I', 'E']
-    QTable2 = {}
-    for a in possible_entries:  # up
-        QTable2[a] = {}
-        for b in possible_entries:  # right
-            QTable2[a][b] = {}
-            for c in possible_entries:  # down
-                QTable2[a][b][c] = {}
-                for d in possible_entries:  # left
-                    QTable2[a][b][c][d] = [0] * 8
-
+    if AI_TYPE == "STATE":
+        QTable = []  # To be used for reinforcement learning
+        for s in range(ROWS * COLUMNS):
+            QTable.append([0] * ACTION_NUM)  # (4 x move) + (4 x vaccinate)
+    elif AI_TYPE == "SENSE":
+        possible_entries = ['V', 'U', 'X', 'I', 'E']
+        QTable2 = {}
+        for a in possible_entries:  # up
+            QTable2[a] = {}
+            for b in possible_entries:  # right
+                QTable2[a][b] = {}
+                for c in possible_entries:  # down
+                    QTable2[a][b][c] = {}
+                    for d in possible_entries:  # left
+                        QTable2[a][b][c][d] = [0] * ACTION_NUM
+    elif AI_TYPE == "DEEP":
+        Qmodel = DeepLearning.create_q_model(ACTION_NUM)
+        Qmodel_target = DeepLearning.create_q_model(ACTION_NUM)
+        optimizer = keras.optimizers.Adam(learning_rate=0.00025, clipnorm=1.0)  # Set the optimizer algorithim
+    
     episodes_ran = 0
     survivors = []
     while episodes > episodes_ran:
@@ -173,11 +185,12 @@ for epsilon_inc in epsilon_range:
                 player_loc = GameBoard.toCoord(GameBoard.state[GameBoard.govt_index].location)
                 player_ind = GameBoard.toIndex(player_loc)
                 possible_moves = PF.get_possible_moves(GameBoard, player_loc, True)
+                
                 # If there are no possible actions other than passing, then pass
                 # Otherwise, use reinforcement learning to select an action
                 if len(possible_moves) == 1:
                     player_action = ["pass"]
-                elif USE_STATE_QTABLE:
+                elif AI_TYPE == "STATE":    # Using QLearning with state
                     # Select one of the possible moves using the greedy epsilon method and set it in player_action
                     player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
                     while player_action not in possible_moves:
@@ -190,7 +203,7 @@ for epsilon_inc in epsilon_range:
                             QTable[player_ind][choice]
                         )
                         player_action, choice = PF.greedy_epsilon(epsilon, QTable[player_ind])
-                else:   # Using the new Q learning
+                elif AI_TYPE == "SENSE":   # Using QLearning with a sensory state
                     l = GameBoard.sense_nearby()
                     player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
                     while player_action not in possible_moves:
@@ -203,7 +216,8 @@ for epsilon_inc in epsilon_range:
                             max(QTable2[l[0]][l[1]][l[2]][l[3]])
                         )
                         player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
-                     
+                elif AI_TYPE == "DEEP": # Using Deep QLearning
+                    pass
                     
                 player_moved = True
             
@@ -226,7 +240,7 @@ for epsilon_inc in epsilon_range:
 
                 # If the AI is playing, then implement reinforcement learning
                 if not HUMAN_PLAY:
-                    if USE_STATE_QTABLE:
+                    if AI_TYPE == "STATE":
                         # Figure out the reward for the action selected
                         #reward = PF.reward(oldGameboard, GameBoard, player_action)
                         reward = PF.reward(GameBoard, GameBoard, player_action)
@@ -239,7 +253,7 @@ for epsilon_inc in epsilon_range:
                             gamma,
                             max(QTable[GameBoard.state[GameBoard.govt_index].location])
                         )
-                    else:
+                    elif AI_TYPE == "SENSE":
                         reward = PF.reward2(player_action, GameBoard)
                         new = GameBoard.sense_nearby()
                         QTable2[l[0]][l[1]][l[2]][l[3]][choice] = PF.update_Q_value(
@@ -248,6 +262,8 @@ for epsilon_inc in epsilon_range:
                             reward,
                             gamma,
                             max(QTable2[new[0]][new[1]][new[2]][new[3]]))
+                    elif AI_TYPE == "DEEP":
+                        pass
                 
                 #iterate through each exitpoint to check if a person is inside of them
                 #create an empty "amount" variable to store the amount of people who exited this round

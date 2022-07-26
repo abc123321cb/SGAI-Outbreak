@@ -217,7 +217,11 @@ for epsilon_inc in epsilon_range:
                         )
                         player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
                 elif AI_TYPE == "DEEP": # Using Deep QLearning
-                    pass
+                    state_tensor = tf.convert_to_tensor(state)
+                    state_tensor = tf.expand_dims(state_tensor, 0)
+                    action_probs = model(state_tensor, training=False)
+                    # Take best action
+                    action = tf.argmax(action_probs[0]).numpy()
                     
                 player_moved = True
             

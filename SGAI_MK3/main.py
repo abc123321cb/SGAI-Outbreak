@@ -32,7 +32,7 @@ roleToRoleBoolean = {"Government": False, "Zombie": True}
 GameBoard = Board((ROWS, COLUMNS), OFFSET, CELL_DIMENSIONS, roleToRoleNum[player_role])
 GameBoard.populate()
 
-#create exit points and assign them locations
+# Create exit points and assign them locations
 ExitPoints = [] #create list of Exit Points
 for i in range(EXIT_POINTS): #create the amount of points specified by the EXIT_POINTS constant
     ExitPoints.append(ExitPoint(rd.randint(0, int(ROWS * COLUMNS) - 1))) #create exit point with random location on the board

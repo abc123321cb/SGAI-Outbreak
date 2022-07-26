@@ -369,7 +369,6 @@ def settings_screen(HUMAN_PLAY, board_size):
     
     if HUMAN_PLAY:
         screen.blit(checkmark_text, human_text_rect)
-        
     else:
         screen.blit(checkmark_text, AI_text_rect)
         

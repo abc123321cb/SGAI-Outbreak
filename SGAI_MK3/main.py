@@ -38,11 +38,11 @@ roleToRoleBoolean = {"Government": False, "Zombie": True}
 GameBoard = Board((ROWS, COLUMNS), OFFSET, CELL_DIMENSIONS, roleToRoleNum[player_role])
 GameBoard.populate()
 
-#create exit points and assign them locations
+# Create exit points and assign them locations
 ExitPoints = [] #create list of Exit Points
 for i in range(EXIT_POINTS): #create the amount of points specified by the EXIT_POINTS constant
     ExitPoints.append(ExitPoint(rd.randint(0, int(ROWS * COLUMNS) - 1))) #create exit point with random location on the board
-#ExitPoints is now the list with all of the ExitPoint objects
+# ExitPoints is now the list with all of the ExitPoint objects
 
 # Self play variables
 alpha = 0.2       # learning rate:   the rate that the AI learns
@@ -320,13 +320,16 @@ for epsilon_inc in epsilon_range:
                             title_screen = True
                         if PF.small_box.collidepoint(event.pos):
                             board_size = 1
-                            ROWS, COLUMNS = 10, 10
+                            GameBoard.update_board([10, 10])
+                            GameBoard.populate()
                         if PF.medium_box.collidepoint(event.pos):
                             board_size = 2
-                            ROWS, COLUMNS = 20, 20
+                            GameBoard.update_board([20, 20])
+                            GameBoard.populate()
                         if PF.large_box.collidepoint(event.pos):
                             board_size = 3
-                            ROWS, COLUMNS = 30, 30
+                            GameBoard.update_board([30, 30])
+                            GameBoard.populate()
                     
     # Store the current conditions
     epsilon_list.append(epsilon)

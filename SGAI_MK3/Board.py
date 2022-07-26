@@ -19,6 +19,10 @@ class Board:
         for s in range(self.rows * self.columns):
             self.state.append(None)
     
+    def update_board(self, dimensions):
+        self.rows = dimensions[0]
+        self.columns = dimensions[1]
+    
     def num_infected(self):
         """
         Returns the number of infected people currently on the board.

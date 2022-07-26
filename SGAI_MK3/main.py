@@ -37,13 +37,15 @@ if AI_TYPE == "DEEP":
     import keras.layers as layers
 
 while not game_active:
+    # Initializes title screen
     while title_screen:
         PF.main_screen()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-                            
+            
+            # Allows player to start game by pressing a key (space)                
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     title_screen = False
@@ -54,14 +56,17 @@ while not game_active:
                     settings_screen = True
                     title_screen = False
 
+    # Initializes and opens settings screen
     while settings_screen:
         PF.settings_screen(HUMAN_PLAY, BOARD_SIZE)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-                
+            
+            # Player input determines the game's settings    
             if event.type == pygame.MOUSEBUTTONDOWN:
+                # Player (human or AI) changes depending on player input
                 if PF.AI_box.collidepoint(event.pos):
                     HUMAN_PLAY = False
                 if PF.human_box.collidepoint(event.pos):
@@ -69,35 +74,25 @@ while not game_active:
                 if PF.back_rect.collidepoint(event.pos):
                     settings_screen = False
                     title_screen = True
-                if PF.small_box.collidepoint(event.pos):
+                    
+                # Gameboard size changes depending on user input
+                if PF.small_box.collidepoint(event.pos): 
                     BOARD_SIZE = 1
-                    #GameBoard.update_board([10, 10], 40)
                     ROWS, COLUMNS = 10, 10
-                    CELL_DIMENSIONS = 40
-                    #PF.load_images(GameBoard) # Load the images, updating them based on player selection
-                    #exit_points(1)
+                    CELL_DIMENSIONS = 60
                     EXIT_POINTS = 1
-                    #GameBoard.populate()
                         
                 if PF.medium_box.collidepoint(event.pos):
                     BOARD_SIZE = 2
-                    #GameBoard.update_board([20, 20], 30)
                     ROWS, COLUMNS = 20, 20
                     CELL_DIMENSIONS = 30
-                    #PF.load_images(GameBoard)
-                    #exit_points(2)
                     EXIT_POINTS = 2
-                    #GameBoard.populate()
                     
                 if PF.large_box.collidepoint(event.pos):
                     BOARD_SIZE = 3
-                    #GameBoard.update_board([30, 30], 20)
                     ROWS, COLUMNS = 30, 30
                     CELL_DIMENSIONS = 20
-                    #PF.load_images(GameBoard)
-                    #exit_points(4)
                     EXIT_POINTS = 4
-                    #GameBoard.populate()
 
 # Player role variables
 player_role = "Government"      # Valid options are "Government" and "Zombie"

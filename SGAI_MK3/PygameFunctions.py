@@ -43,19 +43,41 @@ title_background_rect = title_background.get_rect(center = (600, 350))
 
 # Load settings screen surfaces and text
 checkmark_text = pygame.font.Font("Assets/title_font.ttf", 60)
+settings_text = pygame.font.Font("Assets/menu_font.ttf", 30)
+
 player_role_surf = menu_text.render("Player", False, BLACK)
 player_role_rect = player_role_surf.get_rect(center = (300, 200))
-AI_surf = menu_text.render("AI Model", False, BLACK)
-AI_rect = AI_surf.get_rect(center = (WIDTH - 300, 200))
-AI_box = pygame.Rect(WIDTH - 265 - AI_rect.width, 190, 20, 20)
-human_surf = menu_text.render("Human Player", False, BLACK)
-human_rect = human_surf.get_rect(center = (WIDTH - 300 - AI_rect.width - 100, 200))
+
+AI_surf = settings_text.render("AI Model", False, BLACK)
+AI_rect = AI_surf.get_rect(center = (900, 200))
+AI_box = pygame.Rect(AI_rect.x - 30, 190, 20, 20)
+human_surf = settings_text.render("Human Player", False, BLACK)
+human_rect = human_surf.get_rect(center = (900 - AI_rect.width - 100, 200))
 human_box = pygame.Rect(human_rect.x - 30, 190, 20, 20)
-checkmark_box = checkmark_text.render("X", False, RED)
-AI_text_rect = checkmark_box.get_rect(center = (WIDTH - 255 - AI_rect.width, 205))
-human_text_rect = checkmark_box.get_rect(center = (human_rect.x - 20, 205))
+
+checkmark_text = checkmark_text.render("X", False, RED)
+AI_text_rect = checkmark_text.get_rect(center = (WIDTH - 265 - AI_rect.width, 205))
+human_text_rect = checkmark_text.get_rect(center = (human_rect.x - 20, 205))
+
 back_surf = menu_text.render("Back", False, BLACK)
 back_rect = back_surf.get_rect(topleft = (50, 25))
+
+gameboard_change_surf = menu_text.render("Gameboard Size", False, BLACK)
+gameboard_change_rect = gameboard_change_surf.get_rect(center = (300, 300))
+small_surf = settings_text.render("Small", False, BLACK)
+small_rect = small_surf.get_rect(center = ((AI_rect.x + human_rect.x)//2 - 125, 300))
+small_box = pygame.Rect(small_rect.x - 30, 290, 20, 20)
+small_text_rect = checkmark_text.get_rect(topleft = (small_rect.x - 42, 255))
+
+medium_surf = settings_text.render("Medium", False, BLACK)
+medium_rect = medium_surf.get_rect(center = (small_rect.x + 200, 300))
+medium_box = pygame.Rect(medium_rect.x - 30, 290, 20, 20)
+medium_text_rect = checkmark_text.get_rect(topleft = (medium_rect.x - 42, 255))
+
+large_surf = settings_text.render("Large", False, BLACK)
+large_rect = large_surf.get_rect(center = (medium_rect.x + 200, 300))
+large_box = pygame.Rect(large_rect.x - 30, 290, 20, 20)
+large_text_rect = checkmark_text.get_rect(topleft = (large_rect.x - 42, 255))
 
 
 def load_images(GameBoard):
@@ -103,7 +125,8 @@ def get_possible_moves(GameBoard, player_coor, include_vaccinate):
     Check if the move direction is in bounds
     If so, check if the space is empty.
     If the space is empty, then add the ["move",direction] to the list.
-    If include_vaccinate is True, then also check if vaccination is an option. If the space is not empty AND the person is not vaccinated, then add the ["vaccinate",direction] to the list.
+    If include_vaccinate is True, then also check if vaccination is an option. 
+    If the space is not empty AND the person is not vaccinated, then add the ["vaccinate",direction] to the list.
     """
     possible_moves = []
     possible_moves.append(["pass"])
@@ -134,14 +157,14 @@ def get_possible_moves(GameBoard, player_coor, include_vaccinate):
     return possible_moves
 
 
-def run(GameBoard, exitpoints, episodes_ran = False):
+def run(GameBoard, exitpoints, amount_exited, episodes_ran = False):
     """
     Draw the screen and return any events.
     """
     screen.fill(BACKGROUND)
     build_grid(GameBoard) # Draw the grid
     display_people(GameBoard, exitpoints)
-    display_stats(GameBoard, episodes_ran)
+    display_stats(GameBoard, amount_exited, episodes_ran)
 
 
 def build_grid(GameBoard):
@@ -184,7 +207,8 @@ def display_people(GameBoard, exitpoints):
             )
             if person.isGovt:
                 curr_coor = GameBoard.toCoord(person.location)
-                pygame.draw.rect(screen, WHITE, [GameBoard.offset + curr_coor[0] * GameBoard.cell_size, GameBoard.offset + curr_coor[1] * GameBoard.cell_size, GameBoard.cell_size, GameBoard.cell_size])
+                pygame.draw.rect(screen, WHITE, [
+                    GameBoard.offset + curr_coor[0] * GameBoard.cell_size, GameBoard.offset + curr_coor[1] * GameBoard.cell_size, GameBoard.cell_size, GameBoard.cell_size])
                 screen.blit(img_player_govt, coords)
             elif person.condition == "Healthy":
                 screen.blit(img_player_healthy, coords)
@@ -233,13 +257,14 @@ def progress_infection(GameBoard, days_to_death):
                     GameBoard.death(person.location, person.index)
 
 
-def display_stats(GameBoard, episodes_ran):
+def display_stats(GameBoard, amount_exited, episodes_ran):
     if episodes_ran:
         screen.blit(font.render(f"Episode Number: {episodes_ran}", True, WHITE), (800, 375))
     screen.blit(font.render(f"Initial population: {GameBoard.population_initial}", True, WHITE), (800, 400))
     screen.blit(font.render(f"Current population: {GameBoard.population}", True, WHITE), (800, 425))
     screen.blit(font.render(f"Total infected: {GameBoard.num_infected()}", True, WHITE), (800, 450))
     screen.blit(font.render(f"Total vaccinated: {GameBoard.num_vaccinated()}", True, WHITE), (800, 475))
+    screen.blit(font.render(f"Total escaped: {amount_exited}", True, WHITE), (800, 500))
 
 def display_finish_screen():
     screen.blit(font.render("SIMULATION OVER.", True, WHITE), (800, 300))
@@ -326,7 +351,7 @@ def main_screen():
     pygame.display.update()
     
     
-def settings_screen(HUMAN_PLAY):
+def settings_screen(HUMAN_PLAY, board_size):
     screen.blit(title_background, title_background_rect)
     screen.blit(player_role_surf, player_role_rect)
     screen.blit(human_surf, human_rect)
@@ -334,11 +359,25 @@ def settings_screen(HUMAN_PLAY):
     pygame.draw.rect(screen, DARK_GRAY, AI_box, 3)
     pygame.draw.rect(screen, DARK_GRAY, human_box, 3)
     screen.blit(back_surf, back_rect)
+    screen.blit(gameboard_change_surf, gameboard_change_rect)
+    screen.blit(small_surf, small_rect)
+    pygame.draw.rect(screen, DARK_GRAY, small_box, 3)
+    screen.blit(medium_surf, medium_rect)
+    pygame.draw.rect(screen, DARK_GRAY, medium_box, 3)
+    screen.blit(large_surf, large_rect)
+    pygame.draw.rect(screen, DARK_GRAY, large_box, 3)
     
     if HUMAN_PLAY:
-        screen.blit(checkmark_box, human_text_rect)
+        screen.blit(checkmark_text, human_text_rect)
         
     else:
-        screen.blit(checkmark_box, AI_text_rect)
+        screen.blit(checkmark_text, AI_text_rect)
+        
+    if board_size == 1:
+        screen.blit(checkmark_text, small_text_rect)
+    elif board_size == 2:
+        screen.blit(checkmark_text, medium_text_rect)
+    elif board_size == 3:
+        screen.blit(checkmark_text, large_text_rect)
     
     pygame.display.update()

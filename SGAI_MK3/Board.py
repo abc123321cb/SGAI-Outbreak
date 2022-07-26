@@ -16,9 +16,7 @@ class Board:
         self.population = 0
         self.people = []    # stores a list of all people (healthy and infected)
         self.state = []     # stores the current inhabitant of each location (in 1D index)
-        self.QTable = []    # To be used for reinforcement learning
         for s in range(self.rows * self.columns):
-            self.QTable.append([0] * 6)
             self.state.append(None)
     
     def num_infected(self):

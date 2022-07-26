@@ -45,9 +45,11 @@ title_background_rect = title_background.get_rect(center = (600, 350))
 checkmark_text = pygame.font.Font("Assets/title_font.ttf", 60)
 settings_text = pygame.font.Font("Assets/menu_font.ttf", 30)
 
+# Load and create surface for "player" setting name
 player_role_surf = menu_text.render("Player", False, BLACK)
 player_role_rect = player_role_surf.get_rect(center = (300, 200))
 
+# Load and create surfaces for "player" options (AI Model or Human Play)
 AI_surf = settings_text.render("AI Model", False, BLACK)
 AI_rect = AI_surf.get_rect(center = (900, 200))
 AI_box = pygame.Rect(AI_rect.x - 30, 190, 20, 20)
@@ -55,13 +57,16 @@ human_surf = settings_text.render("Human Player", False, BLACK)
 human_rect = human_surf.get_rect(center = (900 - AI_rect.width - 100, 200))
 human_box = pygame.Rect(human_rect.x - 30, 190, 20, 20)
 
+# Load selected setting visual that can be changed by user input
 checkmark_text = checkmark_text.render("X", False, RED)
 AI_text_rect = checkmark_text.get_rect(center = (WIDTH - 265 - AI_rect.width, 205))
 human_text_rect = checkmark_text.get_rect(center = (human_rect.x - 20, 205))
 
+# Load surface to return to title page
 back_surf = menu_text.render("Back", False, BLACK)
 back_rect = back_surf.get_rect(topleft = (50, 25))
 
+# Load surfaces for "gameboard size" setting
 gameboard_change_surf = menu_text.render("Gameboard Size", False, BLACK)
 gameboard_change_rect = gameboard_change_surf.get_rect(center = (300, 300))
 small_surf = settings_text.render("Small", False, BLACK)

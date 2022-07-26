@@ -345,15 +345,13 @@ for epsilon_inc in epsilon_range:
                     running = False
                 
                 #del oldGameboard
-
-
+                
                     
 # Store the current conditions
     epsilon_list.append(epsilon)
     survivor_list.append(sum(survivors) / len(survivors))
 
 #print(QTable2)
-
 print(QTable2['X']['V']['E']['E'])
 #for a in possible_entries:
 #    for b in possible_entries:

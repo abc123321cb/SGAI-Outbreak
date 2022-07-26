@@ -44,6 +44,9 @@ title_background_rect = title_background.get_rect(center = (600, 350))
 # Load settings screen surfaces and text
 checkmark_text = pygame.font.Font("Assets/title_font.ttf", 60)
 settings_text = pygame.font.Font("Assets/menu_font.ttf", 30)
+settings_title_text = pygame.font.Font("Assets/menu_font.ttf", 50)
+settings_title_surf = settings_title_text.render("Settings", False, BLACK)
+settings_title_rect = settings_title_surf.get_rect(center = (600, 40))
 
 # Load and create surface for "player" setting name
 player_role_surf = menu_text.render("Player", False, BLACK)
@@ -358,6 +361,7 @@ def main_screen():
     
 def settings_screen(HUMAN_PLAY, BOARD_SIZE):
     screen.blit(title_background, title_background_rect)
+    screen.blit(settings_title_surf, settings_title_rect)
     screen.blit(player_role_surf, player_role_rect)
     screen.blit(human_surf, human_rect)
     screen.blit(AI_surf, AI_rect)

@@ -22,12 +22,12 @@ ACTION_NUM = 8                 # The number of actions
 if not HUMAN_PLAY:
     #rd.seed(1)
     pass
-if AI_TYPE == "DEEP":
-    import DeepLearning
-    import numpy as np
-    import tensorflow as tf         #pip install tensorflow
-    from tensorflow import keras
-    from tensorflow.keras import layers
+    if AI_TYPE == "DEEP":
+        import DeepLearning
+        import numpy as np
+        import tensorflow as tf         #pip install tensorflow
+        from tensorflow import keras
+        from tensorflow.keras import layers
 
 # Player role variables
 player_role = "Government"      # Valid options are "Government" and "Zombie"
@@ -91,7 +91,7 @@ for epsilon_inc in epsilon_range:
                     for d in possible_entries:  # left
                         QTable2[a][b][c][d] = [0] * ACTION_NUM
     elif AI_TYPE == "DEEP":
-        Qmodel = DeepLearning.create_q_model(ACTION_NUM)
+        Qmodel = DeepLearning.create_q_model(ROWS, COLUMNS, ACTION_NUM)
         Qmodel_target = DeepLearning.create_q_model(ACTION_NUM)
         optimizer = keras.optimizers.Adam(learning_rate=0.00025, clipnorm=1.0)  # Set the optimizer algorithim
     
@@ -218,9 +218,11 @@ for epsilon_inc in epsilon_range:
                         player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
                 elif AI_TYPE == "DEEP": # Using Deep QLearning
                     # TODO: Need to be adapted to output a player_action and choice variable
-                    state_tensor = tf.convert_to_tensor(state)
+                    state_tensor = tf.convert_to_tensor(GameBoard.state_map())
                     state_tensor = tf.expand_dims(state_tensor, 0)
-                    action_probs = model(state_tensor, training=False)
+                    action_probs = Qmodel(state_tensor, training=False)
+                    print(action_probs)
+                    input()
                     # Take best action
                     action = tf.argmax(action_probs[0]).numpy()
                     

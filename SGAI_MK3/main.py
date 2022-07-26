@@ -26,16 +26,6 @@ title_screen = True
 settings_screen = False
 game_active = False
 
-if not HUMAN_PLAY:
-    #rd.seed(1)
-    pass
-if AI_TYPE == "DEEP":
-    import DeepLearning
-    import numpy as np
-    import tensorflow as tf         #pip install tensorflow
-    from tensorflow import keras
-    import keras.layers as layers
-
 while not game_active:
     # Initializes title screen
     while title_screen:
@@ -93,6 +83,16 @@ while not game_active:
                     ROWS, COLUMNS = 30, 30
                     CELL_DIMENSIONS = 20
                     EXIT_POINTS = 4
+
+if not HUMAN_PLAY:
+    #rd.seed(1)
+    pass
+if AI_TYPE == "DEEP":
+    import DeepLearning
+    import numpy as np
+    import tensorflow as tf         #pip install tensorflow
+    from tensorflow import keras
+    import keras.layers as layers
 
 # Player role variables
 player_role = "Government"      # Valid options are "Government" and "Zombie"

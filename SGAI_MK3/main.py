@@ -217,6 +217,7 @@ for epsilon_inc in epsilon_range:
                         )
                         player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
                 elif AI_TYPE == "DEEP": # Using Deep QLearning
+                    # TODO: Need to be adapted to output a player_action and choice variable
                     state_tensor = tf.convert_to_tensor(state)
                     state_tensor = tf.expand_dims(state_tensor, 0)
                     action_probs = model(state_tensor, training=False)
@@ -267,8 +268,48 @@ for epsilon_inc in epsilon_range:
                             gamma,
                             max(QTable2[new[0]][new[1]][new[2]][new[3]]))
                     elif AI_TYPE == "DEEP":
-                        pass
-                
+                        # Figure out the reward of the action selected
+                        # TODO: Get this working
+                        
+                        
+                        """
+                        SAMPLE 1
+                        # Compute the gradients for a list of variables.
+                        with tf.GradientTape() as tape:
+                            loss = <call_loss_function>
+                        vars = <list_of_variables>
+                        grads = tape.gradient(loss, vars)
+                        
+                        
+                        # Process the gradients, for example cap them, etc.
+                        # capped_grads = [MyCapper(g) for g in grads]
+                        processed_grads = [process_gradient(g) for g in grads]
+
+                        # Ask the optimizer to apply the processed gradients.
+                        optimizer.apply_gradients(zip(processed_grads, var_list))
+                        """
+                        
+                        
+                        """
+                        SAMPLE 2
+                        # Create a mask so we only calculate loss on the updated Q-values
+                        masks = tf.one_hot(action_sample, num_actions)
+                        
+                        with tf.GradientTape() as tape:
+                            # Train the model on the states and updated Q-values
+                            q_values = model(state_sample)
+
+                            # Apply the masks to the Q-values to get the Q-value for action taken
+                            q_action = tf.reduce_sum(tf.multiply(q_values, masks), axis=1)
+                            # Calculate loss between new Q-value and old Q-value
+                            loss = loss_function(updated_q_values, q_action)
+                        
+                        # Backpropagation
+                        grads = tape.gradient(loss, model.trainable_variables)
+                        optimizer.apply_gradients(zip(grads, model.trainable_variables))
+                        """
+                        
+                        
                 #iterate through each exitpoint to check if a person is inside of them
                 #create an empty "amount" variable to store the amount of people who exited this round
                 for Exit in ExitPoints:

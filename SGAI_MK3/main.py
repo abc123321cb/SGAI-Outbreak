@@ -72,8 +72,8 @@ else:
     # this uses the epsilon setting from above
     epsilon_range = range(int(epsilon * 10), int((epsilon * 10) + 1))
 
-# Load images
-PF.load_images(GameBoard)
+# # Load images
+# PF.load_images(GameBoard)
 
 for epsilon_inc in epsilon_range:
     epsilon = float(epsilon_inc) / 10
@@ -320,15 +320,23 @@ for epsilon_inc in epsilon_range:
                             title_screen = True
                         if PF.small_box.collidepoint(event.pos):
                             board_size = 1
-                            GameBoard.update_board([10, 10])
+                            GameBoard.update_board([10, 10], 40)
+                            # Load images
+                            PF.load_images(GameBoard)
                             GameBoard.populate()
+                             
                         if PF.medium_box.collidepoint(event.pos):
                             board_size = 2
-                            GameBoard.update_board([20, 20])
+                            GameBoard.update_board([20, 20], 30)
+                            # Load images
+                            PF.load_images(GameBoard)
                             GameBoard.populate()
+                            
                         if PF.large_box.collidepoint(event.pos):
                             board_size = 3
-                            GameBoard.update_board([30, 30])
+                            GameBoard.update_board([30, 30], 20)
+                            # Load images
+                            PF.load_images(GameBoard)
                             GameBoard.populate()
                     
     # Store the current conditions

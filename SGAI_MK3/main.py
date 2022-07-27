@@ -1,5 +1,4 @@
 import sys
-from tkinter.tix import CELL
 import pygame
 from Board import Board
 import PygameFunctions as PF
@@ -15,8 +14,9 @@ AI_TYPE = "SENSE"
 ACTION_NUM = 8
 
 # Player controlled variables
+# Defaulted to these values
 HUMAN_PLAY = True
-SHOW_EVERY_FRAME = True       # Will show each action taken by AI if True. Shows only last frame if False.
+SHOW_EVERY_FRAME = False        # Will show each action taken by AI if True. Shows only last frame if False.
 ROWS = 30
 COLUMNS = 30
 CELL_DIMENSIONS = 20           # Number of pixels for each cell
@@ -50,7 +50,7 @@ while not game_active:
 
     # Initializes and opens settings screen
     while settings_screen:
-        PF.settings_screen(HUMAN_PLAY, BOARD_SIZE)
+        PF.settings_screen(HUMAN_PLAY, BOARD_SIZE, SHOW_EVERY_FRAME)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -67,24 +67,28 @@ while not game_active:
                     settings_screen = False
                     title_screen = True
                     
-                # Gameboard size changes depending on user input
+                # Gameboard size changes depending on player input
                 if PF.small_box.collidepoint(event.pos): 
                     BOARD_SIZE = 1
                     ROWS, COLUMNS = 10, 10
                     CELL_DIMENSIONS = 60
                     EXIT_POINTS = 1
-                        
                 if PF.medium_box.collidepoint(event.pos):
                     BOARD_SIZE = 2
                     ROWS, COLUMNS = 20, 20
                     CELL_DIMENSIONS = 30
                     EXIT_POINTS = 2
-                    
                 if PF.large_box.collidepoint(event.pos):
                     BOARD_SIZE = 3
                     ROWS, COLUMNS = 30, 30
                     CELL_DIMENSIONS = 20
                     EXIT_POINTS = 4
+                
+                # Actions shown changes depending on player input
+                if PF.all_actions_box.collidepoint(event.pos):
+                    SHOW_EVERY_FRAME = True
+                if PF.last_action_box.collidepoint(event.pos):
+                    SHOW_EVERY_FRAME = False
 
 if not HUMAN_PLAY:
     #rd.seed(1)
@@ -247,8 +251,13 @@ for epsilon_inc in epsilon_range:
                             player_moved = True
                     elif event.type == pygame.QUIT:
                         running = False
-                        sys.exit()
+                        exit()
             else:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        exit()
+                
                 # Get the current player location and determine a list of all possible moves
                 player_loc = GameBoard.toCoord(GameBoard.state[GameBoard.govt_index].location)
                 player_ind = GameBoard.toIndex(player_loc)

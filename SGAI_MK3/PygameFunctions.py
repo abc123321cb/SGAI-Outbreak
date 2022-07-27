@@ -87,6 +87,18 @@ large_rect = large_surf.get_rect(center = (medium_rect.x + 200, 300))
 large_box = pygame.Rect(large_rect.x - 30, 290, 20, 20)
 large_text_rect = checkmark_text.get_rect(topleft = (large_rect.x - 42, 255))
 
+# Load surfaces for "Actions shown" setting (AI Model only)
+actions_shown = menu_text.render("Actions Shown", False, BLACK)
+actions_shown_rect = actions_shown.get_rect(center = (300, 400))
+all_actions_surf = settings_text.render("All Actions", False, BLACK)
+all_actions_rect = all_actions_surf.get_rect(center = (human_rect.x + human_rect.width//2, 400))
+all_actions_box = pygame.Rect(all_actions_rect.x - 30, 390, 20, 20)
+all_actions_text_rect = checkmark_text.get_rect(topleft = (all_actions_rect.x - 42, 355))
+
+last_action_surf = settings_text.render("Last Action", False, BLACK)
+last_action_rect = last_action_surf.get_rect(center = (AI_rect.x + AI_rect.width//2, 400))
+last_action_box = pygame.Rect(last_action_rect.x - 30, 390, 20, 20)
+last_action_text_rect = checkmark_text.get_rect(topleft = (last_action_rect.x - 42, 355))
 
 def load_images(GameBoard):
     """
@@ -359,7 +371,7 @@ def main_screen():
     pygame.display.update()
     
     
-def settings_screen(HUMAN_PLAY, BOARD_SIZE):
+def settings_screen(HUMAN_PLAY, BOARD_SIZE, SHOW_EVERY_FRAME):
     screen.blit(title_background, title_background_rect)
     screen.blit(settings_title_surf, settings_title_rect)
     screen.blit(player_role_surf, player_role_rect)
@@ -368,6 +380,7 @@ def settings_screen(HUMAN_PLAY, BOARD_SIZE):
     pygame.draw.rect(screen, DARK_GRAY, AI_box, 3)
     pygame.draw.rect(screen, DARK_GRAY, human_box, 3)
     screen.blit(back_surf, back_rect)
+    
     screen.blit(gameboard_change_surf, gameboard_change_rect)
     screen.blit(small_surf, small_rect)
     pygame.draw.rect(screen, DARK_GRAY, small_box, 3)
@@ -379,8 +392,19 @@ def settings_screen(HUMAN_PLAY, BOARD_SIZE):
     # Creates "X" selection visual depending on player selection
     if HUMAN_PLAY:
         screen.blit(checkmark_text, human_text_rect)
-    else:
+    # Displays "Actions shown" setting + options if player chooses AI model
+    elif not HUMAN_PLAY:
         screen.blit(checkmark_text, AI_text_rect)
+        screen.blit(actions_shown, actions_shown_rect)
+        screen.blit(all_actions_surf, all_actions_rect)
+        pygame.draw.rect(screen, DARK_GRAY, all_actions_box, 3)
+        screen.blit(last_action_surf, last_action_rect)
+        pygame.draw.rect(screen, DARK_GRAY, last_action_box, 3)
+        
+        if SHOW_EVERY_FRAME:
+            screen.blit(checkmark_text, all_actions_text_rect)
+        elif not SHOW_EVERY_FRAME:
+            screen.blit(checkmark_text, last_action_text_rect)
         
     if BOARD_SIZE == 1:
         screen.blit(checkmark_text, small_text_rect)
@@ -388,5 +412,6 @@ def settings_screen(HUMAN_PLAY, BOARD_SIZE):
         screen.blit(checkmark_text, medium_text_rect)
     elif BOARD_SIZE == 3:
         screen.blit(checkmark_text, large_text_rect)
+    
     
     pygame.display.update()

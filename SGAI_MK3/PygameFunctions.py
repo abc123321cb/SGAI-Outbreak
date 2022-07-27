@@ -6,9 +6,12 @@ import random as rd
 BACKGROUND = "#DDC2A1"
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+DARK_GRAY = "#4C4E52"
 GREEN = (43, 228, 98)
 CELL_COLOR = (40, 40, 40)
 LINE_WIDTH = 1
+WIDTH, HEIGHT = 1200, 700
 
 # Initialize pygame
 pygame.init()
@@ -23,6 +26,66 @@ img_player_govt = None
 img_player_healthy = None
 img_player_vaccinated = None
 img_player_infected = None
+
+# Load menu screen surfaces and text
+game_title_text = pygame.font.Font("Assets/title_font.ttf", 120)
+title_surf = game_title_text.render("RESCUE!", False, RED)
+title_rect = title_surf.get_rect(center = (600, 300))
+menu_text = pygame.font.Font("Assets/menu_font.ttf", 40)
+menu_surf = menu_text.render("Press space to begin", False, BLACK)
+menu_rect = menu_surf.get_rect(center = (600, 450))
+settings_surf = menu_text.render("Settings", False, BLACK)
+settings_rect = settings_surf.get_rect(topright = (1150, 25))
+
+# Load title screen background
+title_background = pygame.image.load("Assets/map_background.jpeg").convert_alpha()
+title_background_rect = title_background.get_rect(center = (600, 350))
+
+# Load settings screen surfaces and text
+checkmark_text = pygame.font.Font("Assets/title_font.ttf", 60)
+settings_text = pygame.font.Font("Assets/menu_font.ttf", 30)
+settings_title_text = pygame.font.Font("Assets/menu_font.ttf", 50)
+settings_title_surf = settings_title_text.render("Settings", False, BLACK)
+settings_title_rect = settings_title_surf.get_rect(center = (600, 40))
+
+# Load and create surface for "player" setting name
+player_role_surf = menu_text.render("Player", False, BLACK)
+player_role_rect = player_role_surf.get_rect(center = (300, 200))
+
+# Load and create surfaces for "player" options (AI Model or Human Play)
+AI_surf = settings_text.render("AI Model", False, BLACK)
+AI_rect = AI_surf.get_rect(center = (900, 200))
+AI_box = pygame.Rect(AI_rect.x - 30, 190, 20, 20)
+human_surf = settings_text.render("Human Player", False, BLACK)
+human_rect = human_surf.get_rect(center = (900 - AI_rect.width - 100, 200))
+human_box = pygame.Rect(human_rect.x - 30, 190, 20, 20)
+
+# Load selected setting visual that can be changed by user input
+checkmark_text = checkmark_text.render("X", False, RED)
+AI_text_rect = checkmark_text.get_rect(center = (WIDTH - 265 - AI_rect.width, 205))
+human_text_rect = checkmark_text.get_rect(center = (human_rect.x - 20, 205))
+
+# Load surface to return to title page
+back_surf = menu_text.render("Back", False, BLACK)
+back_rect = back_surf.get_rect(topleft = (50, 25))
+
+# Load surfaces for "gameboard size" setting
+gameboard_change_surf = menu_text.render("Gameboard Size", False, BLACK)
+gameboard_change_rect = gameboard_change_surf.get_rect(center = (300, 300))
+small_surf = settings_text.render("Small", False, BLACK)
+small_rect = small_surf.get_rect(center = ((AI_rect.x + human_rect.x)//2 - 125, 300))
+small_box = pygame.Rect(small_rect.x - 30, 290, 20, 20)
+small_text_rect = checkmark_text.get_rect(topleft = (small_rect.x - 42, 255))
+
+medium_surf = settings_text.render("Medium", False, BLACK)
+medium_rect = medium_surf.get_rect(center = (small_rect.x + 200, 300))
+medium_box = pygame.Rect(medium_rect.x - 30, 290, 20, 20)
+medium_text_rect = checkmark_text.get_rect(topleft = (medium_rect.x - 42, 255))
+
+large_surf = settings_text.render("Large", False, BLACK)
+large_rect = large_surf.get_rect(center = (medium_rect.x + 200, 300))
+large_box = pygame.Rect(large_rect.x - 30, 290, 20, 20)
+large_text_rect = checkmark_text.get_rect(topleft = (large_rect.x - 42, 255))
 
 
 def load_images(GameBoard):
@@ -70,7 +133,8 @@ def get_possible_moves(GameBoard, player_coor, include_vaccinate):
     Check if the move direction is in bounds
     If so, check if the space is empty.
     If the space is empty, then add the ["move",direction] to the list.
-    If include_vaccinate is True, then also check if vaccination is an option. If the space is not empty AND the person is not vaccinated, then add the ["vaccinate",direction] to the list.
+    If include_vaccinate is True, then also check if vaccination is an option. 
+    If the space is not empty AND the person is not vaccinated, then add the ["vaccinate",direction] to the list.
     """
     possible_moves = []
     possible_moves.append(["pass"])
@@ -151,7 +215,8 @@ def display_people(GameBoard, exitpoints):
             )
             if person.isGovt:
                 curr_coor = GameBoard.toCoord(person.location)
-                pygame.draw.rect(screen, WHITE, [GameBoard.offset + curr_coor[0] * GameBoard.cell_size, GameBoard.offset + curr_coor[1] * GameBoard.cell_size, GameBoard.cell_size, GameBoard.cell_size])
+                pygame.draw.rect(screen, WHITE, [
+                    GameBoard.offset + curr_coor[0] * GameBoard.cell_size, GameBoard.offset + curr_coor[1] * GameBoard.cell_size, GameBoard.cell_size, GameBoard.cell_size])
                 screen.blit(img_player_govt, coords)
             elif person.condition == "Healthy":
                 screen.blit(img_player_healthy, coords)
@@ -284,3 +349,44 @@ def update_Q_value(old_Q, learn, reward, discount_factor, max_new_Q):
     """
     temporal_difference = reward + (discount_factor * max_new_Q) - old_Q
     return old_Q + (learn * temporal_difference)
+
+def main_screen():
+    screen.blit(title_background, title_background_rect)
+    screen.blit(title_surf, title_rect)
+    screen.blit(menu_surf, menu_rect)
+    screen.blit(settings_surf, settings_rect)
+    
+    pygame.display.update()
+    
+    
+def settings_screen(HUMAN_PLAY, BOARD_SIZE):
+    screen.blit(title_background, title_background_rect)
+    screen.blit(settings_title_surf, settings_title_rect)
+    screen.blit(player_role_surf, player_role_rect)
+    screen.blit(human_surf, human_rect)
+    screen.blit(AI_surf, AI_rect)
+    pygame.draw.rect(screen, DARK_GRAY, AI_box, 3)
+    pygame.draw.rect(screen, DARK_GRAY, human_box, 3)
+    screen.blit(back_surf, back_rect)
+    screen.blit(gameboard_change_surf, gameboard_change_rect)
+    screen.blit(small_surf, small_rect)
+    pygame.draw.rect(screen, DARK_GRAY, small_box, 3)
+    screen.blit(medium_surf, medium_rect)
+    pygame.draw.rect(screen, DARK_GRAY, medium_box, 3)
+    screen.blit(large_surf, large_rect)
+    pygame.draw.rect(screen, DARK_GRAY, large_box, 3)
+    
+    # Creates "X" selection visual depending on player selection
+    if HUMAN_PLAY:
+        screen.blit(checkmark_text, human_text_rect)
+    else:
+        screen.blit(checkmark_text, AI_text_rect)
+        
+    if BOARD_SIZE == 1:
+        screen.blit(checkmark_text, small_text_rect)
+    elif BOARD_SIZE == 2:
+        screen.blit(checkmark_text, medium_text_rect)
+    elif BOARD_SIZE == 3:
+        screen.blit(checkmark_text, large_text_rect)
+    
+    pygame.display.update()

@@ -1,11 +1,11 @@
 import numpy as np
 import tensorflow as tf         #pip install tensorflow
 from tensorflow import keras
-from tensorflow.keras import layers
+import keras.layers as layers
 
-def create_q_model(rows, cols, num_actions):
+def create_q_model(num_actions):
     # Network defined by the Deepmind paper
-    inputs = layers.Input(shape=(cols, rows, 4,))
+    inputs = layers.Input(shape=(84, 84, 4,))
 
     # Convolutions on the frames on the screen
     layer1 = layers.Conv2D(32, 8, strides=4, activation="relu")(inputs)

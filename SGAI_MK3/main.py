@@ -1,4 +1,5 @@
 import sys
+from tkinter.tix import CELL
 import pygame
 from Board import Board
 import PygameFunctions as PF
@@ -7,27 +8,93 @@ import copy
 from ExitPoint import ExitPoint
 
 # Constants
+OFFSET = 50                    # Number of pixels to offset grid to the top-left side
+DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
+SHOW_EPSILON_GRAPH = True
+AI_TYPE = "SENSE"
+ACTION_NUM = 8
+
+# Player controlled variables
 HUMAN_PLAY = True
 SHOW_EVERY_FRAME = True       # Will show each action taken by AI if True. Shows only last frame if False.
 ROWS = 30
 COLUMNS = 30
-OFFSET = 50                    # Number of pixels to offset grid to the top-left side
 CELL_DIMENSIONS = 20           # Number of pixels for each cell
-DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
-SHOW_EPSILON_GRAPH = False
-AI_TYPE = "SENSE"              # Must be one of "STATE", "SENSE", "DEEP"
-EXIT_POINTS = 3
-ACTION_NUM = 8                 # The number of actions
+BOARD_SIZE = 3
+EXIT_POINTS = 4
+
+# Game screen variables
+title_screen = True
+settings_screen = False
+game_active = False
+
+while not game_active:
+    # Initializes title screen
+    while title_screen:
+        PF.main_screen()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            
+            # Allows player to start game by pressing a key (space)                
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    title_screen = False
+                    game_active = True
+                                    
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if PF.settings_rect.collidepoint(event.pos):
+                    settings_screen = True
+                    title_screen = False
+
+    # Initializes and opens settings screen
+    while settings_screen:
+        PF.settings_screen(HUMAN_PLAY, BOARD_SIZE)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            
+            # Player input determines the game's settings    
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # Player (human or AI) changes depending on player input
+                if PF.AI_box.collidepoint(event.pos):
+                    HUMAN_PLAY = False
+                if PF.human_box.collidepoint(event.pos):
+                    HUMAN_PLAY = True
+                if PF.back_rect.collidepoint(event.pos):
+                    settings_screen = False
+                    title_screen = True
+                    
+                # Gameboard size changes depending on user input
+                if PF.small_box.collidepoint(event.pos): 
+                    BOARD_SIZE = 1
+                    ROWS, COLUMNS = 10, 10
+                    CELL_DIMENSIONS = 60
+                    EXIT_POINTS = 1
+                        
+                if PF.medium_box.collidepoint(event.pos):
+                    BOARD_SIZE = 2
+                    ROWS, COLUMNS = 20, 20
+                    CELL_DIMENSIONS = 30
+                    EXIT_POINTS = 2
+                    
+                if PF.large_box.collidepoint(event.pos):
+                    BOARD_SIZE = 3
+                    ROWS, COLUMNS = 30, 30
+                    CELL_DIMENSIONS = 20
+                    EXIT_POINTS = 4
 
 if not HUMAN_PLAY:
     #rd.seed(1)
     pass
-    if AI_TYPE == "DEEP":
-        import DeepLearning
-        import numpy as np
-        import tensorflow as tf         #pip install tensorflow
-        from tensorflow import keras
-        from tensorflow.keras import layers
+if AI_TYPE == "DEEP":
+    import DeepLearning
+    import numpy as np
+    import tensorflow as tf         #pip install tensorflow
+    from tensorflow import keras
+    import keras.layers as layers
 
 # Player role variables
 player_role = "Government"      # Valid options are "Government" and "Zombie"
@@ -42,7 +109,7 @@ GameBoard.populate()
 ExitPoints = [] #create list of Exit Points
 for i in range(EXIT_POINTS): #create the amount of points specified by the EXIT_POINTS constant
     ExitPoints.append(ExitPoint(rd.randint(0, int(ROWS * COLUMNS) - 1))) #create exit point with random location on the board
-#ExitPoints is now the list with all of the ExitPoint objects
+    # ExitPoints is now the list with all of the ExitPoint objects
 
 # Self play variables
 alpha = 0.2       # learning rate:   the rate that the AI learns
@@ -53,7 +120,6 @@ if HUMAN_PLAY:
 else:
     episodes = 100    # Number of episodes to run reinforcement learning
 Original_Board = copy.deepcopy(GameBoard)
-
 
 epsilon_list = []
 survivor_list = []
@@ -106,11 +172,13 @@ for epsilon_inc in epsilon_range:
             GameBoard = copy.deepcopy(Original_Board)
         
         AmountExited = 0
-        
+    
         running = True
         while running:
             # Allows the pygame window to be moved during execution without freezing
             pygame.event.pump()
+            
+            #if game_active:
             
             # Update the display
             if HUMAN_PLAY or SHOW_EVERY_FRAME:
@@ -327,12 +395,12 @@ for epsilon_inc in epsilon_range:
                 
                 #del oldGameboard
                 
-    # Store the current conditions
+                    
+# Store the current conditions
     epsilon_list.append(epsilon)
     survivor_list.append(sum(survivors) / len(survivors))
 
 #print(QTable2)
-
 print(QTable2['X']['V']['E']['E'])
 #for a in possible_entries:
 #    for b in possible_entries:

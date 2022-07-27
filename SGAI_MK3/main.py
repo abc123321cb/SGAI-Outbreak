@@ -7,8 +7,8 @@ import copy
 from ExitPoint import ExitPoint
 
 # Constants
-HUMAN_PLAY = True
-SHOW_EVERY_FRAME = False       # Will show each action taken by AI if True. Shows only last frame if False.
+HUMAN_PLAY = False
+SHOW_EVERY_FRAME = True       # Will show each action taken by AI if True. Shows only last frame if False.
 ROWS = 30
 COLUMNS = 30
 OFFSET = 50                    # Number of pixels to offset grid to the top-left side

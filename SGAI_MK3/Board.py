@@ -223,28 +223,28 @@ class Board:
             nearby_contents.append('X')
         else:
             this_contents = self.state[self.toIndex([player_loc[0], player_loc[1] - 1])]
-            nearby_contents.append(state_contents_to_char(this_contents))
+            nearby_contents.append(self.state_contents_to_char(this_contents))
         
         # Look right
         if player_loc[0] == (self.columns - 1):
             nearby_contents.append('X')
         else:
             this_contents = self.state[self.toIndex([player_loc[0] + 1, player_loc[1]])]
-            nearby_contents.append(state_contents_to_char(this_contents))
+            nearby_contents.append(self.state_contents_to_char(this_contents))
         
         # Look down
         if player_loc[1] == (self.rows - 1):
             nearby_contents.append('X')
         else:
             this_contents = self.state[self.toIndex([player_loc[0], player_loc[1] + 1])]
-            nearby_contents.append(state_contents_to_char(this_contents))
+            nearby_contents.append(self.state_contents_to_char(this_contents))
         
         # Look left
         if player_loc[0] == 0:
             nearby_contents.append('X')
         else:
             this_contents = self.state[self.toIndex([player_loc[0] - 1, player_loc[1]])]
-            nearby_contents.append(state_contents_to_char(this_contents))
+            nearby_contents.append(self.state_contents_to_char(this_contents))
         
         return nearby_contents
     

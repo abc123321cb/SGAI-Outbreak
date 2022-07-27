@@ -7,7 +7,7 @@ import copy
 from ExitPoint import ExitPoint
 
 # Constants
-HUMAN_PLAY = False
+HUMAN_PLAY = True
 SHOW_EVERY_FRAME = True       # Will show each action taken by AI if True. Shows only last frame if False.
 ROWS = 30
 COLUMNS = 30
@@ -102,7 +102,7 @@ for epsilon_inc in epsilon_range:
         # Increment the episode counter and reset the board
         episodes_ran += 1
         if episodes_ran > 1:
-            print(f"  Episode #{episodes_ran} ended with {GameBoard.population} alive.")
+            print(f"  Episode #{episodes_ran} ended with {GameBoard.population + AmountExited} alive.")
             GameBoard = copy.deepcopy(Original_Board)
         
         AmountExited = 0
@@ -322,7 +322,7 @@ for epsilon_inc in epsilon_range:
                     #if HUMAN_PLAY or episodes_ran % 100 == 0 or episodes_ran == episodes:
                     PF.run(GameBoard, ExitPoints, AmountExited, episodes_ran)
                     PF.display_finish_screen()
-                    survivors.append(GameBoard.population)
+                    survivors.append(GameBoard.population + AmountExited)
                     running = False
                 
                 #del oldGameboard

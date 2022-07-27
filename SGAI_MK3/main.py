@@ -8,18 +8,20 @@ import copy
 from ExitPoint import ExitPoint
 
 # Constants
+OFFSET = 50                    # Number of pixels to offset grid to the top-left side
+DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
+SHOW_EPSILON_GRAPH = True
+AI_TYPE = "SENSE"
+ACTION_NUM = 8
+
+# Player controlled variables
 HUMAN_PLAY = True
 SHOW_EVERY_FRAME = False       # Will show each action taken by AI if True. Shows only last frame if False.
 ROWS = 30
 COLUMNS = 30
-OFFSET = 50                    # Number of pixels to offset grid to the top-left side
 CELL_DIMENSIONS = 20           # Number of pixels for each cell
 BOARD_SIZE = 3
-DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
-SHOW_EPSILON_GRAPH = True
-AI_TYPE = "SENSE"
 EXIT_POINTS = 4
-ACTION_NUM = 8
 
 # Game screen variables
 title_screen = True

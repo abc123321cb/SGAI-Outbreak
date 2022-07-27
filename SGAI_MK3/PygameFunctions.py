@@ -376,6 +376,7 @@ def settings_screen(HUMAN_PLAY, BOARD_SIZE):
     screen.blit(large_surf, large_rect)
     pygame.draw.rect(screen, DARK_GRAY, large_box, 3)
     
+    # Creates "X" selection visual depending on player selection
     if HUMAN_PLAY:
         screen.blit(checkmark_text, human_text_rect)
     else:

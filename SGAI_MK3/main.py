@@ -1,5 +1,4 @@
 import sys
-from tkinter.tix import CELL
 import pygame
 from Board import Board
 import PygameFunctions as PF

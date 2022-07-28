@@ -16,7 +16,7 @@ ACTION_NUM = 8
 # Player controlled variables
 # Defaulted to these values
 HUMAN_PLAY = True
-SHOW_EVERY_FRAME = False        # Will show each action taken by AI if True. Shows only last frame if False.
+SHOW_EVERY_FRAME = False       # Will show each action taken by AI if True. Shows only last frame if False.
 ROWS = 30
 COLUMNS = 30
 CELL_DIMENSIONS = 20           # Number of pixels for each cell
@@ -127,7 +127,7 @@ Original_Board = copy.deepcopy(GameBoard)
 
 epsilon_list = []
 survivor_list = []
-if SHOW_EPSILON_GRAPH:
+if SHOW_EPSILON_GRAPH and not HUMAN_PLAY:
     import matplotlib.pyplot as plt     #pip install matplotlib
     fig, ax = plt.subplots()
     ax.set_xlabel("epsilon (random)")
@@ -142,7 +142,8 @@ PF.load_images(GameBoard)
 
 for epsilon_inc in epsilon_range:
     epsilon = float(epsilon_inc) / 10
-    print(f"Trying epsilon of {epsilon}")
+    if len(epsilon_range) > 1:
+        print(f"Trying epsilon of {epsilon}")
 
     # Reset the Q Table between runs
     if AI_TYPE == "STATE":
@@ -403,23 +404,13 @@ for epsilon_inc in epsilon_range:
                     running = False
                 
                 #del oldGameboard
-                
-                    
+
 # Store the current conditions
     epsilon_list.append(epsilon)
     survivor_list.append(sum(survivors) / len(survivors))
 
-#print(QTable2)
-print(QTable2['X']['V']['E']['E'])
-#for a in possible_entries:
-#    for b in possible_entries:
-#        for c in possible_entries:
-#            print(QTable2[a][b][c]['X'][4])
-
 print(f"Mean # of surviving people was {sum(survivors) / len(survivors)}.")
 
-if SHOW_EPSILON_GRAPH:
+if SHOW_EPSILON_GRAPH and not HUMAN_PLAY:
     ax.plot(epsilon_list, survivor_list)
     plt.show()
-else:
-    input("Press Enter to continue.")

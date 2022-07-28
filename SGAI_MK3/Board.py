@@ -1,5 +1,6 @@
 import random as rd
 from Person import Person
+import numpy
 
 class Board:
     """
@@ -254,7 +255,13 @@ class Board:
         return nearby_contents
     
     def state_map(self):
-        new_state = []
-        for this_content in self.state:
-            new_state.append(self.state_contents_to_char(this_content))
+        """
+        Create a 2D state map for the deep Q Learning algorithm to learn from.
+        """
+        new_state = numpy.zeros((self.columns, self.rows))
+        this_y = -1
+        for this_index, this_content in enumerate(self.state):
+            if (this_index % self.columns) == 0:
+                this_y += 1
+            new_state[this_index % self.columns][this_y] = ord(self.state_contents_to_char(this_content))
         return new_state

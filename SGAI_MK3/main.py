@@ -92,13 +92,12 @@ while not game_active:
 
 if not HUMAN_PLAY:
     #rd.seed(1)
-    pass
-if AI_TYPE == "DEEP":
-    import DeepLearning
-    import numpy as np
-    import tensorflow as tf         #pip install tensorflow
-    from tensorflow import keras
-    import keras.layers as layers
+    if AI_TYPE == "DEEP":
+        import DeepLearning
+        import numpy as np
+        import tensorflow as tf         #pip install tensorflow
+        from tensorflow import keras
+        import keras.layers as layers
 
 # Player role variables
 player_role = "Government"      # Valid options are "Government" and "Zombie"
@@ -146,25 +145,26 @@ for epsilon_inc in epsilon_range:
         print(f"Trying epsilon of {epsilon}")
 
     # Reset the Q Table between runs
-    if AI_TYPE == "STATE":
-        QTable = []  # To be used for reinforcement learning
-        for s in range(ROWS * COLUMNS):
-            QTable.append([0] * ACTION_NUM)  # (4 x move) + (4 x vaccinate)
-    elif AI_TYPE == "SENSE":
-        possible_entries = ['V', 'U', 'X', 'I', 'E']
-        QTable2 = {}
-        for a in possible_entries:  # up
-            QTable2[a] = {}
-            for b in possible_entries:  # right
-                QTable2[a][b] = {}
-                for c in possible_entries:  # down
-                    QTable2[a][b][c] = {}
-                    for d in possible_entries:  # left
-                        QTable2[a][b][c][d] = [0] * ACTION_NUM
-    elif AI_TYPE == "DEEP":
-        Qmodel = DeepLearning.create_q_model(ROWS, COLUMNS, ACTION_NUM)
-        Qmodel_target = DeepLearning.create_q_model(ACTION_NUM)
-        optimizer = keras.optimizers.Adam(learning_rate=0.00025, clipnorm=1.0)  # Set the optimizer algorithim
+    if not HUMAN_PLAY:
+        if AI_TYPE == "STATE":
+            QTable = []  # To be used for reinforcement learning
+            for s in range(ROWS * COLUMNS):
+                QTable.append([0] * ACTION_NUM)  # (4 x move) + (4 x vaccinate)
+        elif AI_TYPE == "SENSE":
+            possible_entries = ['V', 'U', 'X', 'I', 'E']
+            QTable2 = {}
+            for a in possible_entries:  # up
+                QTable2[a] = {}
+                for b in possible_entries:  # right
+                    QTable2[a][b] = {}
+                    for c in possible_entries:  # down
+                        QTable2[a][b][c] = {}
+                        for d in possible_entries:  # left
+                            QTable2[a][b][c][d] = [0] * ACTION_NUM
+        elif AI_TYPE == "DEEP":
+            Qmodel = DeepLearning.create_q_model(ROWS, COLUMNS, ACTION_NUM)
+            Qmodel_target = DeepLearning.create_q_model(ROWS, COLUMNS, ACTION_NUM)
+            optimizer = keras.optimizers.Adam(learning_rate=0.00025, clipnorm=1.0)  # Set the optimizer algorithim
     
     episodes_ran = 0
     survivors = []
@@ -182,8 +182,6 @@ for epsilon_inc in epsilon_range:
         while running:
             # Allows the pygame window to be moved during execution without freezing
             pygame.event.pump()
-            
-            #if game_active:
             
             # Update the display
             if HUMAN_PLAY or SHOW_EVERY_FRAME:
@@ -295,14 +293,20 @@ for epsilon_inc in epsilon_range:
                         )
                         player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
                 elif AI_TYPE == "DEEP": # Using Deep QLearning
-                    # TODO: Need to be adapted to output a player_action and choice variable
+                    # Convert the 2D state map into a tensor and feed it into the neural net
                     state_tensor = tf.convert_to_tensor(GameBoard.state_map())
                     state_tensor = tf.expand_dims(state_tensor, 0)
                     action_probs = Qmodel(state_tensor, training=False)
-                    print(action_probs)
-                    input()
-                    # Take best action
-                    action = tf.argmax(action_probs[0]).numpy()
+                    
+                    # Take best action according to the neural net
+                    choice = tf.argmax(action_probs[0]).numpy()
+                    player_action = PF.convert_to_action(choice)
+                    
+                    # TODO: Deal with the scenario that the neural net suggests a move that is not possible
+                    if player_action not in possible_moves:
+                        print(f"Neural net is suggesting {player_action} but this is not possible.")
+                        sys.exit()
+                        
                     
                 player_moved = True
             

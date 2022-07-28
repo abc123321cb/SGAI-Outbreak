@@ -370,7 +370,6 @@ def main_screen():
     
     pygame.display.update()
     
-    
 def settings_screen(HUMAN_PLAY, BOARD_SIZE, SHOW_EVERY_FRAME):
     screen.blit(title_background, title_background_rect)
     screen.blit(settings_title_surf, settings_title_rect)
@@ -412,6 +411,5 @@ def settings_screen(HUMAN_PLAY, BOARD_SIZE, SHOW_EVERY_FRAME):
         screen.blit(checkmark_text, medium_text_rect)
     elif BOARD_SIZE == 3:
         screen.blit(checkmark_text, large_text_rect)
-    
     
     pygame.display.update()

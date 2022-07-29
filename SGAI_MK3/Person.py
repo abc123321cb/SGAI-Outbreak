@@ -1,4 +1,5 @@
 import random as rd
+import Board
 
 class Person:
     """

@@ -10,7 +10,7 @@ from ExitPoint import ExitPoint
 OFFSET = 50                    # Number of pixels to offset grid to the top-left side
 DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
 SHOW_EPSILON_GRAPH = True
-AI_TYPE = "DEEP"
+AI_TYPE = "SENSE"
 ACTION_NUM = 8
 
 # Player controlled variables
@@ -322,7 +322,7 @@ for epsilon_inc in epsilon_range:
                     GameBoard.vaccinate(player_action[1], player_loc)
 
                 # Allow all the people in the simulation to have a turn now
-                PF.simulate(GameBoard)
+                PF.simulate(GameBoard, ExitPoints)
 
                 # People die!
                 PF.progress_infection(GameBoard, DAYS_TO_DEATH)

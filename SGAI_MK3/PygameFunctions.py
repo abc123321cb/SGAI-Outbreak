@@ -238,10 +238,14 @@ def display_people(GameBoard, exitpoints):
                 screen.blit(img_player_infected, coords)
 
 
-def simulate(GameBoard):
+def simulate(GameBoard, exitpoints):
     """
     Allow all the non-government people in the simulation to take a turn.
     """
+    for person in GameBoard.people:
+        if person != None:
+            if person.isGovt:
+                person_loc = person.location 
     for person in GameBoard.people:
         if person != None:
             if not person.isGovt:
@@ -257,7 +261,46 @@ def simulate(GameBoard):
                 
                 # Choose a possible move and perform it
                 possible_moves = get_possible_moves(GameBoard, player_loc, False)
-                if len(possible_moves) > 0:
+                if person.distance(person_loc, GameBoard) < 3:
+                    if not person.isInfected:
+                        dshort = 1000
+                        dnewshort = 1000
+                        coorNeed = person.location
+                        for exit in exitpoints:
+                            curr_coor = exit.location
+                            dnewshort = person.distance(curr_coor, GameBoard)
+                            if dshort > dnewshort:
+                                dshort = dnewshort
+                                coorNeed = curr_coor
+                        first_coord = GameBoard.toCoord(person.location)
+                        second_coord = GameBoard.toCoord(coorNeed)
+                        a = second_coord[0] - first_coord[0]
+                        b = second_coord[1] - first_coord[1]
+                        if abs(a) > abs(b):
+                            if a > 0:
+                                check = ["move", "right"]
+                                if check in possible_moves:
+                                    GameBoard.move("right", player_loc, False)
+                            else:
+                                check = ["move", "left"]
+                                if check in possible_moves:
+                                    GameBoard.move("left", player_loc, False)                          
+                        elif b > 0:
+                            check = ["move", "down"]
+                            if check in possible_moves:    
+                                GameBoard.move("down", player_loc, False)            
+                        else:
+                            check = ["move", "up"]
+                            if check in possible_moves:
+                                GameBoard.move("up", player_loc, False)
+                    elif len(possible_moves) > 0:
+                        this_move = rd.choice(possible_moves)
+                        if this_move[0] == "move":
+                            GameBoard.move(this_move[1], player_loc, False)
+
+                    
+
+                elif len(possible_moves) > 0:
                     this_move = rd.choice(possible_moves)
                     if this_move[0] == "move":
                         GameBoard.move(this_move[1], player_loc, False)

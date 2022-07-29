@@ -10,7 +10,7 @@ from ExitPoint import ExitPoint
 OFFSET = 50                    # Number of pixels to offset grid to the top-left side
 DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
 SHOW_EPSILON_GRAPH = True
-AI_TYPE = "SENSE"
+AI_TYPE = "DEEP"
 ACTION_NUM = 8
 
 # Player controlled variables
@@ -163,8 +163,8 @@ for epsilon_inc in epsilon_range:
                             QTable2[a][b][c][d] = [0] * ACTION_NUM
         elif AI_TYPE == "DEEP":
             Qmodel = DeepLearning.create_q_model(ROWS, COLUMNS, ACTION_NUM)
-            Qmodel_target = DeepLearning.create_q_model(ROWS, COLUMNS, ACTION_NUM)
-            optimizer = keras.optimizers.Adam(learning_rate=0.00025, clipnorm=1.0)  # Set the optimizer algorithim
+            #Qmodel_target = DeepLearning.create_q_model(ROWS, COLUMNS, ACTION_NUM)
+            optimizer = keras.optimizers.Adam(learning_rate=alpha, clipnorm=1.0)  # Set the optimizer algorithim
     
     episodes_ran = 0
     survivors = []
@@ -354,6 +354,11 @@ for epsilon_inc in epsilon_range:
                     elif AI_TYPE == "DEEP":
                         # Figure out the reward of the action selected
                         # TODO: Get this working
+                        
+                        # Get the reward for the current state, action pair
+                        reward = PF.reward2(player_action, GameBoard)
+                        
+                        # Train the neural net with the action, reward
                         
                         
                         """

@@ -517,6 +517,8 @@ def instruction_screen():
     """
     Creates the "how to play" screen.
     Details what the goal is and how to play the game.
+    
+    TODO: Flush out instructions screen with controls and directive.  
     """
     screen.blit(title_background, title_background_rect)
     screen.blit(govt_agent_surf, govt_agent_rect)

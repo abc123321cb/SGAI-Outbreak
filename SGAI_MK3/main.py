@@ -414,14 +414,17 @@ for epsilon_inc in epsilon_range:
                 # Ends the game when there are no more infected alive
                 if GameBoard.num_infected() == 0:
                     # Game over screen is only active during human play
-                    if HUMAN_PLAY:  #or episodes_ran % 100 == 0 or episodes_ran == episodes
-                        game_over = True
+                    while HUMAN_PLAY:  #or episodes_ran % 100 == 0 or episodes_ran == episodes
                         PF.display_finish_screen(GameBoard, AmountExited)
+                        for event in pygame.event.get():
+                            if event.type == pygame.KEYDOWN:
+                                if event.key == pygame.K_SPACE:
+                                    os.execl(sys.executable, sys.executable, *sys.argv)
+                        game_over = True
                         survivors.append(GameBoard.population + AmountExited)
                     
-                    else:
-                        PF.run(GameBoard, ExitPoints, AmountExited)
-                        running = False
+                    PF.run(GameBoard, ExitPoints, AmountExited)
+                    running = False
 
     # Store the current conditions
     epsilon_list.append(epsilon)

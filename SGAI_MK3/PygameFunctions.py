@@ -104,6 +104,9 @@ last_action_text_rect = checkmark_text.get_rect(topleft = (last_action_rect.x - 
 game_over_surf = game_title_text.render("Game Over", False, RED)
 game_over_rect = game_over_surf.get_rect(center = (600, 275))
 
+play_again_surf = menu_text.render("Press space to restart", False, BLACK)
+play_again_rect = play_again_surf.get_rect(center = (600, 480))
+
 def load_images(GameBoard):
     """
     Load all of the game image assets once
@@ -345,6 +348,7 @@ def display_finish_screen(GameBoard, amount_exited):
     total_escape_surf = menu_text.render(f"Total escaped: {amount_exited}", False, BLACK)
     total_escape_rect = total_escape_surf.get_rect(center = (600, 430))
     screen.blit(total_escape_surf, total_escape_rect)
+    screen.blit(play_again_surf, play_again_rect)
     
     pygame.display.update()
 

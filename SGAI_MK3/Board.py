@@ -1,4 +1,5 @@
 import random as rd
+from unittest.mock import NonCallableMagicMock
 from Person import Person
 import numpy
 
@@ -19,12 +20,7 @@ class Board:
         self.state = []     # stores the current inhabitant of each location (in 1D index)
         for s in range(self.rows * self.columns):
             self.state.append(None)
-    
-    def update_board(self, dimensions, cell_size):
-        self.rows = dimensions[0]
-        self.columns = dimensions[1]
-        self.cell_size = cell_size
-    
+
     def num_infected(self):
         """
         Returns the number of infected people currently on the board.

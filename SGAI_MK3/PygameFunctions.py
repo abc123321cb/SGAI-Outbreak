@@ -100,6 +100,10 @@ last_action_rect = last_action_surf.get_rect(center = (AI_rect.x + AI_rect.width
 last_action_box = pygame.Rect(last_action_rect.x - 30, 390, 20, 20)
 last_action_text_rect = checkmark_text.get_rect(topleft = (last_action_rect.x - 42, 355))
 
+# Load surfaces for "game over" screen
+game_over_surf = game_title_text.render("Game Over", False, RED)
+game_over_rect = game_over_surf.get_rect(center = (600, 275))
+
 def load_images(GameBoard):
     """
     Load all of the game image assets once
@@ -329,8 +333,19 @@ def display_stats(GameBoard, amount_exited, episodes_ran):
     screen.blit(font.render(f"Total vaccinated: {GameBoard.num_vaccinated()}", True, WHITE), (800, 475))
     screen.blit(font.render(f"Total escaped: {amount_exited}", True, WHITE), (800, 500))
 
-def display_finish_screen():
-    screen.blit(font.render("SIMULATION OVER.", True, WHITE), (800, 300))
+def display_finish_screen(GameBoard, amount_exited):
+    screen.blit(title_background, title_background_rect)
+    screen.blit(game_over_surf, game_over_rect)
+    init_pop_surf = menu_text.render(f"Initial population: {GameBoard.population_initial}", False, BLACK)
+    init_pop_rect = init_pop_surf.get_rect(center = (600, 350))
+    screen.blit(init_pop_surf, init_pop_rect)
+    total_vacc_surf = menu_text.render(f"Total vaccinated: {GameBoard.num_vaccinated()}", False, BLACK)
+    total_vacc_rect = total_vacc_surf.get_rect(center = (600, 390))
+    screen.blit(total_vacc_surf, total_vacc_rect)
+    total_escape_surf = menu_text.render(f"Total escaped: {amount_exited}", False, BLACK)
+    total_escape_rect = total_escape_surf.get_rect(center = (600, 430))
+    screen.blit(total_escape_surf, total_escape_rect)
+    
     pygame.display.update()
 
 

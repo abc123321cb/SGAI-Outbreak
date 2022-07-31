@@ -1,3 +1,4 @@
+import os
 import sys
 import pygame
 from Board import Board
@@ -23,10 +24,13 @@ CELL_DIMENSIONS = 20           # Number of pixels for each cell
 BOARD_SIZE = 3
 EXIT_POINTS = 4
 
-# Game screen variables
+
+# Game screen and uncontrolled (not controlled by player) variables
 title_screen = True
 settings_screen = False
 game_active = False
+game_over = False
+AmountExited = 0
 
 while not game_active:
     # Initializes title screen
@@ -169,10 +173,12 @@ for epsilon_inc in epsilon_range:
     episodes_ran = 0
     survivors = []
     while episodes > episodes_ran:
-        
         # Increment the episode counter and reset the board
         episodes_ran += 1
         if episodes_ran > 1:
+            PF.run(GameBoard, ExitPoints, AmountExited)
+            pygame.display.update()
+            
             print(f"  Episode #{episodes_ran} ended with {GameBoard.population + AmountExited} alive.")
             GameBoard = copy.deepcopy(Original_Board)
         
@@ -185,8 +191,9 @@ for epsilon_inc in epsilon_range:
             
             # Update the display
             if HUMAN_PLAY or SHOW_EVERY_FRAME:
-                PF.run(GameBoard, ExitPoints, AmountExited)
-                pygame.display.update()
+                if not game_over:
+                    PF.run(GameBoard, ExitPoints, AmountExited)
+                    pygame.display.update()
             
             # Get the (human or AI) player's intention for their turn
             player_moved = False
@@ -404,17 +411,19 @@ for epsilon_inc in epsilon_range:
                 for Exit in ExitPoints:
                     AmountExited += Exit.CheckPeopleExited(GameBoard.people, GameBoard) #returns a "1" if someone exited, returns a 0 if no one was in exit
 
-                # Check for end conditions
-                if GameBoard.num_infected() == 0:   # There are no infected people left
-                    #if HUMAN_PLAY or episodes_ran % 100 == 0 or episodes_ran == episodes:
-                    PF.run(GameBoard, ExitPoints, AmountExited, episodes_ran)
-                    PF.display_finish_screen()
-                    survivors.append(GameBoard.population + AmountExited)
-                    running = False
-                
-                #del oldGameboard
+                # Ends the game when there are no more infected alive
+                if GameBoard.num_infected() == 0:
+                    # Game over screen is only active during human play
+                    if HUMAN_PLAY:  #or episodes_ran % 100 == 0 or episodes_ran == episodes
+                        game_over = True
+                        PF.display_finish_screen(GameBoard, AmountExited)
+                        survivors.append(GameBoard.population + AmountExited)
+                    
+                    else:
+                        PF.run(GameBoard, ExitPoints, AmountExited)
+                        running = False
 
-# Store the current conditions
+    # Store the current conditions
     epsilon_list.append(epsilon)
     survivor_list.append(sum(survivors) / len(survivors))
 

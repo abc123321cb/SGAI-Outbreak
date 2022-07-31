@@ -28,6 +28,7 @@ EXIT_POINTS = 4
 # Game screen and uncontrolled (not controlled by player) variables
 title_screen = True
 settings_screen = False
+instruction_screen = False
 game_active = False
 game_over = False
 AmountExited = 0
@@ -50,6 +51,9 @@ while not game_active:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PF.settings_rect.collidepoint(event.pos):
                     settings_screen = True
+                    title_screen = False
+                if PF.instruction_rect.collidepoint(event.pos):
+                    instruction_screen = True
                     title_screen = False
 
     # Initializes and opens settings screen
@@ -93,6 +97,19 @@ while not game_active:
                     SHOW_EVERY_FRAME = True
                 if PF.last_action_box.collidepoint(event.pos):
                     SHOW_EVERY_FRAME = False
+    while instruction_screen:
+        PF.instruction_screen()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # Returns the user to the title screen if the back button is pressed
+                if PF.back_rect.collidepoint(event.pos): 
+                    instruction_screen = False
+                    title_screen = True
+
 
 if not HUMAN_PLAY:
     #rd.seed(1)

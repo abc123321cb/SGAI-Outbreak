@@ -27,24 +27,31 @@ img_player_healthy = None
 img_player_vaccinated = None
 img_player_infected = None
 
-# Load menu screen surfaces and text
+# Load all text
 game_title_text = pygame.font.Font("Assets/title_font.ttf", 120)
+menu_text = pygame.font.Font("Assets/menu_font.ttf", 40)
+checkmark_text = pygame.font.Font("Assets/title_font.ttf", 60)
+settings_text = pygame.font.Font("Assets/menu_font.ttf", 30)
+settings_title_text = pygame.font.Font("Assets/menu_font.ttf", 50)
+checkmark_text = checkmark_text.render("X", False, RED)
+
+
+# Load menu screen surfaces
 title_surf = game_title_text.render("RESCUE!", False, RED)
 title_rect = title_surf.get_rect(center = (600, 300))
-menu_text = pygame.font.Font("Assets/menu_font.ttf", 40)
 menu_surf = menu_text.render("Press space to begin", False, BLACK)
 menu_rect = menu_surf.get_rect(center = (600, 450))
 settings_surf = menu_text.render("Settings", False, BLACK)
 settings_rect = settings_surf.get_rect(topright = (1150, 25))
+instruction_surf = menu_text.render("How to play", False, BLACK)
+instruction_rect = instruction_surf.get_rect(topleft = (50, 25))
 
 # Load title screen background
 title_background = pygame.image.load("Assets/map_background.jpeg").convert_alpha()
 title_background_rect = title_background.get_rect(center = (600, 350))
 
+
 # Load settings screen surfaces and text
-checkmark_text = pygame.font.Font("Assets/title_font.ttf", 60)
-settings_text = pygame.font.Font("Assets/menu_font.ttf", 30)
-settings_title_text = pygame.font.Font("Assets/menu_font.ttf", 50)
 settings_title_surf = settings_title_text.render("Settings", False, BLACK)
 settings_title_rect = settings_title_surf.get_rect(center = (600, 40))
 
@@ -61,7 +68,6 @@ human_rect = human_surf.get_rect(center = (900 - AI_rect.width - 100, 200))
 human_box = pygame.Rect(human_rect.x - 30, 190, 20, 20)
 
 # Load selected setting visual that can be changed by user input
-checkmark_text = checkmark_text.render("X", False, RED)
 AI_text_rect = checkmark_text.get_rect(center = (WIDTH - 265 - AI_rect.width, 205))
 human_text_rect = checkmark_text.get_rect(center = (human_rect.x - 20, 205))
 
@@ -99,6 +105,16 @@ last_action_surf = settings_text.render("Last Action", False, BLACK)
 last_action_rect = last_action_surf.get_rect(center = (AI_rect.x + AI_rect.width//2, 400))
 last_action_box = pygame.Rect(last_action_rect.x - 30, 390, 20, 20)
 last_action_text_rect = checkmark_text.get_rect(topleft = (last_action_rect.x - 42, 355))
+
+# Load surfaces for instructions/how to play screen
+govt_agent_surf = settings_title_text.render("How to Play", False, BLACK)
+govt_agent_rect = govt_agent_surf.get_rect(center = (600, 40))
+overview_surf = menu_text.render("Directive", False, BLACK)
+overview_rect = overview_surf.get_rect(center = (600, 150))
+overview_text_surf = settings_text.render(
+    "You are a government agent. Your goal is to cure and evacuate as many people as possible.", False, BLACK)
+overview_text_rect = overview_text_surf.get_rect(center = (600, 200))
+
 
 # Load surfaces for "game over" screen
 game_over_surf = game_title_text.render("Game Over", False, RED)
@@ -337,6 +353,14 @@ def display_stats(GameBoard, amount_exited, episodes_ran):
     screen.blit(font.render(f"Total escaped: {amount_exited}", True, WHITE), (800, 500))
 
 def display_finish_screen(GameBoard, amount_exited):
+    """
+    Creates the "game over" screen at the end of the game if a human is playing.
+    Using the parameters, certain statistics are shown to the player.
+    
+    Parameters:
+        GameBoard: Collects the gameboard information to determine some of the statistics.
+        amount_exited: Collects the amount of people that fled the board by the end of the game.
+    """
     screen.blit(title_background, title_background_rect)
     screen.blit(game_over_surf, game_over_rect)
     init_pop_surf = menu_text.render(f"Initial population: {GameBoard.population_initial}", False, BLACK)
@@ -425,22 +449,35 @@ def update_Q_value(old_Q, learn, reward, discount_factor, max_new_Q):
     return old_Q + (learn * temporal_difference)
 
 def main_screen():
+    """
+    Creates the main screen shown at the beginning of the game.
+    """
     screen.blit(title_background, title_background_rect)
     screen.blit(title_surf, title_rect)
     screen.blit(menu_surf, menu_rect)
     screen.blit(settings_surf, settings_rect)
+    screen.blit(instruction_surf, instruction_rect)
     
     pygame.display.update()
     
 def settings_screen(HUMAN_PLAY, BOARD_SIZE, SHOW_EVERY_FRAME):
+    """
+    Creates the settings screen that can be viewed by pressing the "settings" button on main screen.
+    Depending on the player input, the visual setting indicator/checkmark is shown or hidden.
+    
+    Parameters:
+        HUMAN_PLAY: Collects what is playing (human or AI) and shows/hides a setting accordingly
+        BOARD_SIZE: Collects the chosen board size (small, medium, or large) and changes the visual indicator/checkmark accordingly
+        SHOW_EVERY_FRAME: If the AI is playing, this collects whether the user wants to see all actions or just the last action, changing the checkmark accordingly
+    """
     screen.blit(title_background, title_background_rect)
     screen.blit(settings_title_surf, settings_title_rect)
+    screen.blit(back_surf, back_rect)
     screen.blit(player_role_surf, player_role_rect)
     screen.blit(human_surf, human_rect)
     screen.blit(AI_surf, AI_rect)
     pygame.draw.rect(screen, DARK_GRAY, AI_box, 3)
     pygame.draw.rect(screen, DARK_GRAY, human_box, 3)
-    screen.blit(back_surf, back_rect)
     
     screen.blit(gameboard_change_surf, gameboard_change_rect)
     screen.blit(small_surf, small_rect)
@@ -473,5 +510,18 @@ def settings_screen(HUMAN_PLAY, BOARD_SIZE, SHOW_EVERY_FRAME):
         screen.blit(checkmark_text, medium_text_rect)
     elif BOARD_SIZE == 3:
         screen.blit(checkmark_text, large_text_rect)
+    
+    pygame.display.update()
+    
+def instruction_screen():
+    """
+    Creates the "how to play" screen.
+    Details what the goal is and how to play the game.
+    """
+    screen.blit(title_background, title_background_rect)
+    screen.blit(govt_agent_surf, govt_agent_rect)
+    screen.blit(back_surf, back_rect)
+    screen.blit(overview_surf, overview_rect)
+    screen.blit(overview_text_surf, overview_text_rect)
     
     pygame.display.update()

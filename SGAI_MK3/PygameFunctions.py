@@ -124,6 +124,7 @@ last_action_text_rect = checkmark_text.get_rect(topleft = (last_action_rect.x - 
 # Load surfaces for instructions/how to play screen
 instruct_surf = settings_title_text.render("How to Play", False, BLACK)
 instruct_rect = instruct_surf.get_rect(center = (600, 40))
+
 overview_text1_surf = menu_text.render("You are a government agent.", False, BLACK)
 overview_text1_rect = overview_text1_surf.get_rect(center = (600, 110))
 overview_text2_surf = menu_text.render("Your directive: Save as many people as possible.", False, BLACK)
@@ -133,6 +134,7 @@ overview_text3_rect = overview_text3_surf.get_rect(center = (600, 230))
 overview_text4_surf = menu_text.render("Guide nearby humans towards the exits.", False, BLACK)
 overview_text4_rect = overview_text4_surf.get_rect(center = (600, 290))
 
+# Load surfaces for controls
 controls_surf = controls_text.render("Controls", False, RED)
 controls_rect = controls_surf.get_rect(center = (600, 400))
 movement_surf = menu_text.render("Movement", False, BLACK)
@@ -553,24 +555,27 @@ def instruction_screen():
     """
     Creates the "how to play" screen.
     Details what the goal is and how to play the game.
-    
-    TODO: Flush out instructions screen with controls and directive.  
+    Also details the game's controls
     """
+    # Main features of screen
     screen.blit(title_background, title_background_rect)
     screen.blit(instruct_surf, instruct_rect)
     screen.blit(back_surf, back_rect)
     screen.blit(controls_surf, controls_rect)
     
+    # Game objectives
     screen.blit(overview_text1_surf, overview_text1_rect)
     screen.blit(overview_text2_surf, overview_text2_rect)
     screen.blit(overview_text3_surf, overview_text3_rect)
     screen.blit(overview_text4_surf, overview_text4_rect)
     
+    # Game images
     screen.blit(img_arrow_keys, img_keys_rect)
     screen.blit(img_lmb, img_lmb_rect)
     screen.blit(img_rmb, img_rmb_rect)
     screen.blit(img_spacebar, img_spacebar_rect)
 
+    # Game image text
     screen.blit(movement_surf, movement_rect)
     screen.blit(or_text_surf, or_text_rect)
     screen.blit(arrow_keys_surf, arrow_keys_rect)

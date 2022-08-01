@@ -194,7 +194,7 @@ for epsilon_inc in epsilon_range:
         # ExitPoints is now the list with all of the ExitPoint objects
         
         if episodes_ran > 1:
-            PF.run(GameBoard, ExitPoints, AmountExited)
+            PF.run(GameBoard, ExitPoints, AmountExited, episodes_ran, rl_episodes = True)
             pygame.display.update()
             print(f"  Episode #{episodes_ran} ended with {alive_count + AmountExited} alive.")
             GameBoard = copy.deepcopy(Original_Board)
@@ -209,7 +209,10 @@ for epsilon_inc in epsilon_range:
             # Update the display
             if HUMAN_PLAY or SHOW_EVERY_FRAME:
                 if not game_over:
-                    PF.run(GameBoard, ExitPoints, AmountExited)
+                    if not HUMAN_PLAY:
+                        PF.run(GameBoard, ExitPoints, AmountExited, episodes_ran, rl_episodes = True)
+                    else:
+                        PF.run(GameBoard, ExitPoints, AmountExited, episodes_ran, rl_episodes = False)
                     pygame.display.update()
             
             # Get the (human or AI) player's intention for their turn
@@ -449,7 +452,7 @@ for epsilon_inc in epsilon_range:
                                     if event.key == pygame.K_SPACE:
                                         os.execl(sys.executable, sys.executable, *sys.argv)
 
-                    PF.run(GameBoard, ExitPoints, AmountExited)
+                    PF.run(GameBoard, ExitPoints, AmountExited, episodes_ran, rl_episodes = True)
                     running = False
 
     # Store the current conditions

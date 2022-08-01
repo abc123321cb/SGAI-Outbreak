@@ -16,10 +16,9 @@ WIDTH, HEIGHT = 1200, 700
 # Initialize pygame
 pygame.init()
 screen = pygame.display.set_mode((1200, 700))
-pygame.display.set_caption("Outbreak!")
+pygame.display.set_caption("Rescue!")
 pygame.font.init()
-font = pygame.font.SysFont("Comic Sans", 20)
-screen.fill(BACKGROUND)
+font = pygame.font.SysFont("Comic Sans", 30)
 
 # Load images
 img_player_govt = None
@@ -27,19 +26,11 @@ img_player_healthy = None
 img_player_vaccinated = None
 img_player_infected = None
 
-# Load how to play screen images
+# Load "controls" images
 img_arrow_keys = pygame.image.load("Assets/keyboard_image.png").convert_alpha()
-img_arrow_keys = pygame.transform.scale(img_arrow_keys, (318, 318))
-img_keys_rect = img_arrow_keys.get_rect(center = (200, 575))
 img_lmb = pygame.image.load("Assets/lmb_image.png").convert_alpha()
-img_lmb = pygame.transform.scale(img_lmb, (318, 318))
-img_lmb_rect = img_lmb.get_rect(center = (450, 575))
 img_rmb = pygame.image.load("Assets/rmb_image.png").convert_alpha()
-img_rmb = pygame.transform.scale(img_rmb, (318, 318))
-img_rmb_rect = img_rmb.get_rect(center = (700, 575))
 img_spacebar = pygame.image.load("Assets/spacebar_image.png").convert_alpha()
-img_spacebar = pygame.transform.scale(img_spacebar, (318, 318))
-img_spacebar_rect = img_spacebar.get_rect(center = (1000, 575))
 
 # Load all text
 game_title_text = pygame.font.Font("Assets/title_font.ttf", 120)
@@ -50,6 +41,16 @@ settings_title_text = pygame.font.Font("Assets/menu_font.ttf", 60)
 controls_text = pygame.font.Font("Assets/menu_font.ttf", 50)
 checkmark_text = checkmark_text.render("X", False, RED)
 
+
+# Scale "controls" images for "how to play" screen and load rectangles for easy placement
+img_arrow_keys_controls = pygame.transform.scale(img_arrow_keys, (318, 318))
+img_keys_controls_rect = img_arrow_keys_controls.get_rect(center = (200, 575))
+img_lmb_controls = pygame.transform.scale(img_lmb, (318, 318))
+img_lmb_controls_rect = img_lmb_controls.get_rect(center = (450, 575))
+img_rmb_controls = pygame.transform.scale(img_rmb, (318, 318))
+img_rmb_controls_rect = img_rmb_controls.get_rect(center = (700, 575))
+img_spacebar_controls = pygame.transform.scale(img_spacebar, (318, 318))
+img_spacebar_controls_rect = img_spacebar_controls.get_rect(center = (1000, 575))
 
 # Load menu screen surfaces
 title_surf = game_title_text.render("RESCUE!", False, RED)
@@ -141,21 +142,39 @@ overview_text4_rect = overview_text4_surf.get_rect(center = (600, 320))
 controls_surf = controls_text.render("Controls", False, RED)
 controls_rect = controls_surf.get_rect(center = (600, 400))
 movement_surf = menu_text.render("Movement", False, BLACK)
-movement_rect = movement_surf.get_rect(center = (350, 475))
+move_controls_rect = movement_surf.get_rect(center = (350, 475))
 or_text_surf = menu_text.render("or", False, BLACK)
-or_text_rect = or_text_surf.get_rect(center = (350, 575))
+or_text_controls_rect = or_text_surf.get_rect(center = (350, 575))
 arrow_keys_surf = menu_text.render("arrow keys", False, BLACK)
 arrow_keys_rect = arrow_keys_surf.get_rect(center = (200, 650))
 lmb_surf = menu_text.render("LMB", False, BLACK)
 lmb_rect = lmb_surf.get_rect(center = (450, 650))
 heal_surf = menu_text.render("Cure", False, BLACK)
-heal_rect = heal_surf.get_rect(center = (700, 475))
+heal_controls_rect = heal_surf.get_rect(center = (700, 475))
 rmb_surf = menu_text.render("RMB", False, BLACK)
 rmb_rect = rmb_surf.get_rect(center = (700, 650))
 skip_surf = menu_text.render("Skip turn", False, BLACK)
-skip_rect = skip_surf.get_rect(center = (1000, 475))
+skip_controls_rect = skip_surf.get_rect(center = (1000, 475))
 spacebar_surf = menu_text.render("Spacebar", False, BLACK)
 spacebar_rect = spacebar_surf.get_rect(center = (1000, 650))
+
+
+# Scale "controls" images for gameboard and load rectangles for easy placement
+img_arrow_keys_gb = pygame.transform.scale(img_arrow_keys, (318, 318))
+img_keys_gb_rect = img_arrow_keys_gb.get_rect(center = (875,125))
+img_lmb_gb = pygame.transform.scale(img_lmb, (318, 318))
+img_lmb_gb_rect = img_lmb_gb.get_rect(center = (1050, 125))
+img_rmb_gb = pygame.transform.scale(img_rmb, (318, 318))
+img_rmb_gb_rect = img_rmb_gb.get_rect(center = (825, 325))
+img_spacebar_gb = pygame.transform.scale(img_spacebar, (318, 318))
+img_spacebar_gb_rect = img_spacebar_gb.get_rect(center = (1050, 325))
+
+# Load text and rectangles for gameboard controls
+move_gb_rect = movement_surf.get_rect(center = (962, 40))
+or_gb_rect = or_text_surf.get_rect(center = (985, 125))
+heal_gb_rect = heal_surf.get_rect(center = (825, 240))
+skip_gb_rect = skip_surf.get_rect(center = (1050, 240))
+
 
 # Load surfaces for "game over" screen
 game_over_surf = game_title_text.render("Game Over", False, RED)
@@ -241,14 +260,15 @@ def get_possible_moves(GameBoard, player_coor, include_vaccinate):
     return possible_moves
 
 
-def run(GameBoard, exitpoints, amount_exited, episodes_ran = False):
+def run(GameBoard, exitpoints, amount_exited, episodes_ran, rl_episodes = False):
     """
     Draw the screen and return any events.
     """
     screen.fill(BACKGROUND)
     build_grid(GameBoard) # Draw the grid
     display_people(GameBoard, exitpoints)
-    display_stats(GameBoard, amount_exited, episodes_ran)
+    display_stats(GameBoard, amount_exited, episodes_ran, rl_episodes)
+    display_controls()
 
 
 def build_grid(GameBoard):
@@ -301,6 +321,17 @@ def display_people(GameBoard, exitpoints):
             else: # only infected people right now
                 screen.blit(img_player_infected, coords)
 
+
+def display_controls():
+    screen.blit(img_arrow_keys_gb, img_keys_gb_rect)
+    screen.blit(img_lmb_gb, img_lmb_gb_rect)
+    screen.blit(img_rmb_gb, img_rmb_gb_rect)
+    screen.blit(img_spacebar_gb, img_spacebar_gb_rect)
+    screen.blit(movement_surf, move_gb_rect)
+    screen.blit(or_text_surf, or_gb_rect)
+    screen.blit(heal_surf, heal_gb_rect)
+    screen.blit(skip_surf, skip_gb_rect)
+    
 
 def simulate(GameBoard, exitpoints):
     """
@@ -384,14 +415,14 @@ def progress_infection(GameBoard, days_to_death):
                     GameBoard.death(person.location, person.index)
 
 
-def display_stats(GameBoard, amount_exited, episodes_ran):
-    if episodes_ran:
-        screen.blit(font.render(f"Episode Number: {episodes_ran}", True, WHITE), (800, 375))
-    screen.blit(font.render(f"Initial population: {GameBoard.population_initial}", True, WHITE), (800, 400))
-    screen.blit(font.render(f"Current population: {GameBoard.population}", True, WHITE), (800, 425))
-    screen.blit(font.render(f"Total infected: {GameBoard.num_infected()}", True, WHITE), (800, 450))
-    screen.blit(font.render(f"Total vaccinated: {GameBoard.num_vaccinated()}", True, WHITE), (800, 475))
-    screen.blit(font.render(f"Total escaped: {amount_exited}", True, WHITE), (800, 500))
+def display_stats(GameBoard, amount_exited, episodes_ran, rl_episodes = False):
+    if rl_episodes:
+        screen.blit(font.render(f"Episode Number: {episodes_ran}", True, WHITE), (800, 410))
+    screen.blit(font.render(f"Initial population: {GameBoard.population_initial}", True, WHITE), (800, 445))
+    screen.blit(font.render(f"Current population: {GameBoard.population}", True, WHITE), (800, 480))
+    screen.blit(font.render(f"Total infected: {GameBoard.num_infected()}", True, WHITE), (800, 515))
+    screen.blit(font.render(f"Total vaccinated: {GameBoard.num_vaccinated()}", True, WHITE), (800, 550))
+    screen.blit(font.render(f"Total escaped: {amount_exited}", True, WHITE), (800, 585))
 
 def display_finish_screen(GameBoard, amount_exited):
     """
@@ -574,19 +605,19 @@ def instruction_screen():
     screen.blit(overview_text4_surf, overview_text4_rect)
     
     # Game images
-    screen.blit(img_arrow_keys, img_keys_rect)
-    screen.blit(img_lmb, img_lmb_rect)
-    screen.blit(img_rmb, img_rmb_rect)
-    screen.blit(img_spacebar, img_spacebar_rect)
+    screen.blit(img_arrow_keys_controls, img_keys_controls_rect)
+    screen.blit(img_lmb_controls, img_lmb_controls_rect)
+    screen.blit(img_rmb_controls, img_rmb_controls_rect)
+    screen.blit(img_spacebar_controls, img_spacebar_controls_rect)
 
     # Game image text
-    screen.blit(movement_surf, movement_rect)
-    screen.blit(or_text_surf, or_text_rect)
+    screen.blit(movement_surf, move_controls_rect)
+    screen.blit(or_text_surf, or_text_controls_rect)
     screen.blit(arrow_keys_surf, arrow_keys_rect)
     screen.blit(lmb_surf, lmb_rect)
-    screen.blit(heal_surf, heal_rect)
+    screen.blit(heal_surf, heal_controls_rect)
     screen.blit(rmb_surf, rmb_rect)
-    screen.blit(skip_surf, skip_rect)
+    screen.blit(skip_surf, skip_controls_rect)
     screen.blit(spacebar_surf, spacebar_rect)
     
     pygame.display.update()

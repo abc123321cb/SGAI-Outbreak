@@ -27,12 +27,27 @@ img_player_healthy = None
 img_player_vaccinated = None
 img_player_infected = None
 
+# Load how to play screen images
+img_arrow_keys = pygame.image.load("Assets/keyboard_image.png").convert_alpha()
+img_arrow_keys = pygame.transform.scale(img_arrow_keys, (318, 318))
+img_keys_rect = img_arrow_keys.get_rect(center = (200, 575))
+img_lmb = pygame.image.load("Assets/lmb_image.png").convert_alpha()
+img_lmb = pygame.transform.scale(img_lmb, (318, 318))
+img_lmb_rect = img_lmb.get_rect(center = (450, 575))
+img_rmb = pygame.image.load("Assets/rmb_image.png").convert_alpha()
+img_rmb = pygame.transform.scale(img_rmb, (318, 318))
+img_rmb_rect = img_rmb.get_rect(center = (700, 575))
+img_spacebar = pygame.image.load("Assets/spacebar_image.png").convert_alpha()
+img_spacebar = pygame.transform.scale(img_spacebar, (318, 318))
+img_spacebar_rect = img_spacebar.get_rect(center = (1000, 575))
+
 # Load all text
 game_title_text = pygame.font.Font("Assets/title_font.ttf", 120)
 menu_text = pygame.font.Font("Assets/menu_font.ttf", 40)
 checkmark_text = pygame.font.Font("Assets/title_font.ttf", 60)
 settings_text = pygame.font.Font("Assets/menu_font.ttf", 30)
-settings_title_text = pygame.font.Font("Assets/menu_font.ttf", 50)
+settings_title_text = pygame.font.Font("Assets/menu_font.ttf", 60)
+controls_text = pygame.font.Font("Assets/menu_font.ttf", 50)
 checkmark_text = checkmark_text.render("X", False, RED)
 
 
@@ -107,14 +122,35 @@ last_action_box = pygame.Rect(last_action_rect.x - 30, 390, 20, 20)
 last_action_text_rect = checkmark_text.get_rect(topleft = (last_action_rect.x - 42, 355))
 
 # Load surfaces for instructions/how to play screen
-govt_agent_surf = settings_title_text.render("How to Play", False, BLACK)
-govt_agent_rect = govt_agent_surf.get_rect(center = (600, 40))
-overview_surf = menu_text.render("Directive", False, BLACK)
-overview_rect = overview_surf.get_rect(center = (600, 150))
-overview_text_surf = settings_text.render(
-    "You are a government agent. Your goal is to cure and evacuate as many people as possible.", False, BLACK)
-overview_text_rect = overview_text_surf.get_rect(center = (600, 200))
+instruct_surf = settings_title_text.render("How to Play", False, BLACK)
+instruct_rect = instruct_surf.get_rect(center = (600, 40))
+overview_text1_surf = menu_text.render("You are a government agent.", False, BLACK)
+overview_text1_rect = overview_text1_surf.get_rect(center = (600, 110))
+overview_text2_surf = menu_text.render("Your directive: Save as many people as possible.", False, BLACK)
+overview_text2_rect = overview_text2_surf.get_rect(center = (600, 170))
+overview_text3_surf = menu_text.render("Cure adjacent zombies and vaccinate adjacent humans.", False, BLACK)
+overview_text3_rect = overview_text3_surf.get_rect(center = (600, 230))
+overview_text4_surf = menu_text.render("Guide nearby humans towards the exits.", False, BLACK)
+overview_text4_rect = overview_text4_surf.get_rect(center = (600, 290))
 
+controls_surf = controls_text.render("Controls", False, RED)
+controls_rect = controls_surf.get_rect(center = (600, 400))
+movement_surf = menu_text.render("Movement", False, BLACK)
+movement_rect = movement_surf.get_rect(center = (350, 475))
+or_text_surf = menu_text.render("or", False, BLACK)
+or_text_rect = or_text_surf.get_rect(center = (350, 575))
+arrow_keys_surf = menu_text.render("arrow keys", False, BLACK)
+arrow_keys_rect = arrow_keys_surf.get_rect(center = (200, 650))
+lmb_surf = menu_text.render("LMB", False, BLACK)
+lmb_rect = lmb_surf.get_rect(center = (450, 650))
+heal_surf = menu_text.render("Cure", False, BLACK)
+heal_rect = heal_surf.get_rect(center = (700, 475))
+rmb_surf = menu_text.render("RMB", False, BLACK)
+rmb_rect = rmb_surf.get_rect(center = (700, 650))
+skip_surf = menu_text.render("Skip turn", False, BLACK)
+skip_rect = skip_surf.get_rect(center = (1000, 475))
+spacebar_surf = menu_text.render("Spacebar", False, BLACK)
+spacebar_rect = spacebar_surf.get_rect(center = (1000, 650))
 
 # Load surfaces for "game over" screen
 game_over_surf = game_title_text.render("Game Over", False, RED)
@@ -521,9 +557,27 @@ def instruction_screen():
     TODO: Flush out instructions screen with controls and directive.  
     """
     screen.blit(title_background, title_background_rect)
-    screen.blit(govt_agent_surf, govt_agent_rect)
+    screen.blit(instruct_surf, instruct_rect)
     screen.blit(back_surf, back_rect)
-    screen.blit(overview_surf, overview_rect)
-    screen.blit(overview_text_surf, overview_text_rect)
+    screen.blit(controls_surf, controls_rect)
+    
+    screen.blit(overview_text1_surf, overview_text1_rect)
+    screen.blit(overview_text2_surf, overview_text2_rect)
+    screen.blit(overview_text3_surf, overview_text3_rect)
+    screen.blit(overview_text4_surf, overview_text4_rect)
+    
+    screen.blit(img_arrow_keys, img_keys_rect)
+    screen.blit(img_lmb, img_lmb_rect)
+    screen.blit(img_rmb, img_rmb_rect)
+    screen.blit(img_spacebar, img_spacebar_rect)
+
+    screen.blit(movement_surf, movement_rect)
+    screen.blit(or_text_surf, or_text_rect)
+    screen.blit(arrow_keys_surf, arrow_keys_rect)
+    screen.blit(lmb_surf, lmb_rect)
+    screen.blit(heal_surf, heal_rect)
+    screen.blit(rmb_surf, rmb_rect)
+    screen.blit(skip_surf, skip_rect)
+    screen.blit(spacebar_surf, spacebar_rect)
     
     pygame.display.update()

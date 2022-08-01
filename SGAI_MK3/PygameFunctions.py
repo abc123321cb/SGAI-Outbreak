@@ -125,14 +125,17 @@ last_action_text_rect = checkmark_text.get_rect(topleft = (last_action_rect.x - 
 instruct_surf = settings_title_text.render("How to Play", False, BLACK)
 instruct_rect = instruct_surf.get_rect(center = (600, 40))
 
+overview_title_surf = controls_text.render("Overview", False, RED)
+overview_title_rect = overview_title_surf.get_rect(center = (600, 110))
+
 overview_text1_surf = menu_text.render("You are a government agent.", False, BLACK)
-overview_text1_rect = overview_text1_surf.get_rect(center = (600, 110))
+overview_text1_rect = overview_text1_surf.get_rect(center = (600, 170))
 overview_text2_surf = menu_text.render("Your directive: Save as many people as possible.", False, BLACK)
-overview_text2_rect = overview_text2_surf.get_rect(center = (600, 170))
+overview_text2_rect = overview_text2_surf.get_rect(center = (600, 220))
 overview_text3_surf = menu_text.render("Cure adjacent zombies and vaccinate adjacent humans.", False, BLACK)
-overview_text3_rect = overview_text3_surf.get_rect(center = (600, 230))
+overview_text3_rect = overview_text3_surf.get_rect(center = (600, 270))
 overview_text4_surf = menu_text.render("Guide nearby humans towards the exits.", False, BLACK)
-overview_text4_rect = overview_text4_surf.get_rect(center = (600, 290))
+overview_text4_rect = overview_text4_surf.get_rect(center = (600, 320))
 
 # Load surfaces for controls
 controls_surf = controls_text.render("Controls", False, RED)
@@ -562,6 +565,7 @@ def instruction_screen():
     screen.blit(instruct_surf, instruct_rect)
     screen.blit(back_surf, back_rect)
     screen.blit(controls_surf, controls_rect)
+    screen.blit(overview_title_surf, overview_title_rect)
     
     # Game objectives
     screen.blit(overview_text1_surf, overview_text1_rect)

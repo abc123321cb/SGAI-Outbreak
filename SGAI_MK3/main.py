@@ -129,12 +129,6 @@ roleToRoleBoolean = {"Government": False, "Zombie": True}
 GameBoard = Board((ROWS, COLUMNS), OFFSET, CELL_DIMENSIONS, roleToRoleNum[player_role])
 GameBoard.populate()
 
-# Create exit points and assign them locations
-ExitPoints = [] #create list of Exit Points
-for i in range(EXIT_POINTS): #create the amount of points specified by the EXIT_POINTS constant
-    ExitPoints.append(ExitPoint(rd.randint(0, int(ROWS * COLUMNS) - 1))) #create exit point with random location on the board
-    # ExitPoints is now the list with all of the ExitPoint objects
-
 # Self play variables
 alpha = 0.2       # learning rate:   the rate that the AI learns
 gamma = 0.9       # discount factor: discount for future rewards
@@ -192,6 +186,13 @@ for epsilon_inc in epsilon_range:
     while episodes > episodes_ran:
         # Increment the episode counter and reset the board
         episodes_ran += 1
+        
+        # Create exit points and assign them locations
+        ExitPoints = [] #create list of Exit Points
+        for i in range(EXIT_POINTS): #create the amount of points specified by the EXIT_POINTS constant
+            ExitPoints.append(ExitPoint(rd.randint(0, int(ROWS * COLUMNS) - 1))) #create exit point with random location on the board
+        # ExitPoints is now the list with all of the ExitPoint objects
+        
         if episodes_ran > 1:
             PF.run(GameBoard, ExitPoints, AmountExited)
             pygame.display.update()

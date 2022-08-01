@@ -184,7 +184,7 @@ for epsilon_inc in epsilon_range:
     episodes_ran = 0
     survivors = []
     while episodes > episodes_ran:
-        # Increment the episode counter and reset the board
+        # Increment the episode counter
         episodes_ran += 1
         
         # Create exit points and assign them locations
@@ -196,8 +196,7 @@ for epsilon_inc in epsilon_range:
         if episodes_ran > 1:
             PF.run(GameBoard, ExitPoints, AmountExited)
             pygame.display.update()
-            
-            print(f"  Episode #{episodes_ran} ended with {GameBoard.population + AmountExited} alive.")
+            print(f"  Episode #{episodes_ran} ended with {alive_count + AmountExited} alive.")
             GameBoard = copy.deepcopy(Original_Board)
         
         AmountExited = 0
@@ -435,8 +434,8 @@ for epsilon_inc in epsilon_range:
                 # Ends the game when there are no more infected alive
                 # Can also end the game if no humans are left on the board
                 if GameBoard.num_infected() == 0 or alive_count == 1:
-                    # Game over screen is only active during human play
                     survivors.append(GameBoard.population + AmountExited)
+                    # Game over screen is only active during human play
                     if HUMAN_PLAY:  #or episodes_ran % 100 == 0 or episodes_ran == episodes
                         PF.display_finish_screen(GameBoard, AmountExited)
                         game_over = True

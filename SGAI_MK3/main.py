@@ -215,9 +215,9 @@ for epsilon_inc in epsilon_range:
             # Get the (human or AI) player's intention for their turn
             player_moved = False
             if HUMAN_PLAY:
+                player_action = []
                 for event in pygame.event.get():    # Event Handling
                     if event.type == pygame.MOUSEBUTTONUP:
-                        player_action = []
                         x, y = event.pos[0], event.pos[1]
                         button_pressed = event.button
                         player_loc = GameBoard.toCoord(GameBoard.state[GameBoard.govt_index].location)

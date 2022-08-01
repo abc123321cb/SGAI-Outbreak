@@ -350,6 +350,9 @@ for epsilon_inc in epsilon_range:
 
                 # People die!
                 PF.progress_infection(GameBoard, DAYS_TO_DEATH)
+                
+                # Determine all of the living people on the board after each move
+                alive_count = GameBoard.num_alive()
 
                 # If the AI is playing, then implement reinforcement learning
                 if not HUMAN_PLAY:
@@ -429,11 +432,16 @@ for epsilon_inc in epsilon_range:
                     AmountExited += Exit.CheckPeopleExited(GameBoard.people, GameBoard) #returns a "1" if someone exited, returns a 0 if no one was in exit
 
                 # Ends the game when there are no more infected alive
-                if GameBoard.num_infected() == 0:
+                # Can also end the game if no humans are left on the board
+                if GameBoard.num_infected() == 0 or alive_count == 1:
                     # Game over screen is only active during human play
                     while HUMAN_PLAY:  #or episodes_ran % 100 == 0 or episodes_ran == episodes
                         PF.display_finish_screen(GameBoard, AmountExited)
                         for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                pygame.quit()
+                                exit()
+
                             if event.type == pygame.KEYDOWN:
                                 if event.key == pygame.K_SPACE:
                                     os.execl(sys.executable, sys.executable, *sys.argv)

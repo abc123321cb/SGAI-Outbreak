@@ -43,6 +43,19 @@ class Board:
                     vaccinated_count += 1
         return vaccinated_count
     
+    def num_alive(self):
+        """
+        Returns the number of alive people (regardless of vaccination status) currently on the board.
+        """
+        alive_count = 0
+        for person in self.people:
+            if person != None:
+                if person.isInfected:
+                    pass
+                else:
+                    alive_count += 1
+        return alive_count
+    
     def toCoord(self, index):
         return (index % self.columns, int(index / self.columns))
 

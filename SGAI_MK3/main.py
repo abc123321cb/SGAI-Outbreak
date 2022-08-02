@@ -473,6 +473,8 @@ for epsilon_inc in epsilon_range:
                 if previousGovt_index == GameBoard.govt_index:
                     stuck_counter +=1
                 else:
+                    stuck_counter = 0
+                else:
                     #if not in previous location, set it to be the govt_index in case of other turn
                     previousGovt_index = GameBoard.govt_index
                 if stuck_counter == 4:

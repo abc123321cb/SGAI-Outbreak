@@ -16,6 +16,8 @@ class Board:
         self.govt_index = None
         self.player_role = role
         self.population = 0
+        self.zombies_cured = 0
+        self.humans_vaccinated = 0
         self.people = []    # stores a list of all people (healthy and infected)
         self.state = []     # stores the current inhabitant of each location (in 1D index)
         for s in range(self.rows * self.columns):
@@ -143,6 +145,13 @@ class Board:
         # Get the new coordinate to heal
         new_index = self.toIndex(self.get_coor(direction, player_loc))
         
+        # Store whether a human was vaccinated or a zombie was cured
+        person_healed = self.state[new_index]
+        if person_healed.isInfected:
+            self.zombies_cured += 1
+        else:
+            self.humans_vaccinated += 1
+            
         # Heal the person
         self.state[new_index].heal_person()
     
@@ -181,20 +190,24 @@ class Board:
             this_healthy_person = Person(len(self.people), "Healthy", index)
             self.people.append( this_healthy_person )
             self.state[index] = this_healthy_person
-        
-        # Set the population attribute
-        self.population = len(location_healthy_set)
-        self.population_initial = self.population
 
         # Make a list of some of the created people to change them to "Infected" at random
         location_infected_set = set()
         while len(location_infected_set) < 4:    # Four is an arbitrary number
             selected_index = rd.choice(list(location_healthy_set))  # Have to convert the set to a list in order to select with rd.choice
             location_infected_set.add(selected_index)
+            location_healthy_set.remove(selected_index)
         
         # Change the person to infected
         for index in location_infected_set:
             self.state[index].infect_person()
+        
+        # Set the population attribute
+        self.population = len(location_healthy_set)
+        self.population_initial = self.population
+        
+        # Set the infected attribute
+        self.infected_initial = len(location_infected_set)
         
         # Make a list of one of the created healthy people to change them to "Govt" at random
         govt_index_found = False

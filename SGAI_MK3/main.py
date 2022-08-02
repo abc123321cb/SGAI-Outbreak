@@ -34,6 +34,8 @@ game_active = False
 game_over = False
 AmountExited = 0
 turns_taken = 0
+previousGovt_index = "Not" #set to be false
+stuck_counter = 0
 
 while not game_active:
     # Initializes title screen
@@ -462,6 +464,30 @@ for epsilon_inc in epsilon_range:
                     PF.run(GameBoard, ExitPoints, AmountExited, episodes_ran, rl_episodes = True)
                     turns_taken = 0
                     running = False
+                
+                
+                #Check if player is in the same spot for four turns, if not, 
+                # Move the player and set attributes
+                
+                #set a index
+                if previousGovt_index == GameBoard.govt_index:
+                    stuck_counter +=1
+                else:
+                    #if not in previous location, set it to be the govt_index in case of other turn
+                    previousGovt_index = GameBoard.govt_index
+                if stuck_counter == 4:
+                    #setting old_index to govt_index instead of manually using GameBoard.govt_index for ease of use
+                    old_index = GameBoard.govt_index
+                    #determine new location
+                    new_index = "NotSelected"
+                    while new_index == "NotSelected":
+                        selected_index = rd.randint(0, int(GameBoard.rows * GameBoard.columns) - 1)
+                        if GameBoard.state[selected_index] == None:
+                            new_index = selected_index
+                    GameBoard.state[old_index].location = new_index                                                  # Set the new location for the player
+                    GameBoard.state[old_index], GameBoard.state[new_index] = GameBoard.state[new_index], GameBoard.state[old_index] # Swap the state positions
+                    GameBoard.govt_index = new_index                                                                     # Point to the new position of the player
+                    stuck_counter = 0
 
     # Store the current conditions
     epsilon_list.append(epsilon)

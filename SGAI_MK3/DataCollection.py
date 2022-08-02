@@ -1,5 +1,4 @@
 import csv
-import pandas as pd
 
 data_headers = ["Board Size", "Initial Infected Pop", "Initial Human Pop", "Turns", 
                 "Total Heal", "Total Skip", "Zombies Cured", "Humans Vaccinated", "Humans Escaped", "Final Human Pop"]

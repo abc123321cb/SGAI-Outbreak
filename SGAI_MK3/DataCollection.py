@@ -1,10 +1,7 @@
 import csv
 
-data_headers = ["Board Size", "Initial Infected Pop", "Initial Human Pop", "Turns", 
-                "Total Heal", "Total Skip", "Zombies Cured", "Humans Vaccinated", "Humans Escaped", "Final Human Pop"]
-
-
 def data_collection(HumanPlay, every_turn, GameBoard, turns_taken, AmountExited, BoardSize):
+    print(every_turn)
     
     player_chose_vacc = 0
     player_chose_skip = 0
@@ -52,3 +49,4 @@ def data_collection(HumanPlay, every_turn, GameBoard, turns_taken, AmountExited,
 
 def steps_taken(player_action, every_turn):
     every_turn.append(player_action)
+

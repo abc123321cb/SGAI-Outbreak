@@ -6,6 +6,7 @@ import PygameFunctions as PF
 import random as rd
 import copy
 from ExitPoint import ExitPoint
+import DataCollection as DC
 
 # Constants
 OFFSET = 50                    # Number of pixels to offset grid to the top-left side
@@ -32,6 +33,7 @@ instruction_screen = False
 game_active = False
 game_over = False
 AmountExited = 0
+turns_taken = 0
 
 while not game_active:
     # Initializes title screen
@@ -200,6 +202,9 @@ for epsilon_inc in epsilon_range:
             GameBoard = copy.deepcopy(Original_Board)
         
         AmountExited = 0
+        
+        # Create list to hold every action per game for data collection
+        every_turn = []
     
         running = True
         while running:
@@ -339,7 +344,8 @@ for epsilon_inc in epsilon_range:
             
             # If the player or AI has selected an action, then the simulation can advance one step
             if player_moved:   
-                #oldGameboard = copy.deepcopy(GameBoard)
+                turns_taken += 1
+                DC.steps_taken(player_action, every_turn)
                 
                 # Implement the player's action
                 # Doesn't check for "pass" since nothing needs to change
@@ -438,6 +444,7 @@ for epsilon_inc in epsilon_range:
                 # Can also end the game if no humans are left on the board
                 if GameBoard.num_infected() == 0 or alive_count == 1:
                     survivors.append(GameBoard.population + AmountExited)
+                    DC.data_collection(HUMAN_PLAY, every_turn, GameBoard, turns_taken, AmountExited, BOARD_SIZE)
                     # Game over screen is only active during human play
                     if HUMAN_PLAY:  #or episodes_ran % 100 == 0 or episodes_ran == episodes
                         PF.display_finish_screen(GameBoard, AmountExited)
@@ -453,6 +460,7 @@ for epsilon_inc in epsilon_range:
                                         os.execl(sys.executable, sys.executable, *sys.argv)
 
                     PF.run(GameBoard, ExitPoints, AmountExited, episodes_ran, rl_episodes = True)
+                    turns_taken = 0
                     running = False
 
     # Store the current conditions

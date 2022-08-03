@@ -124,7 +124,7 @@ if not HUMAN_PLAY:
 
 
         print("getting model")
-        trained_model = sb3.DQN.load("DQN_agent")
+        trained_model = sb3.DQN.load("DQN_agent_10x10_1M")
 
 
 # Player role variables
@@ -341,7 +341,7 @@ for epsilon_inc in epsilon_range:
                         7: ["move", "down"]
                     }
                     MAX_NUM_INDEX = 5
-                    time.sleep(1)
+                    #time.sleep(1)
                     # Get the current map in 1D
                     num_dict = {'V': 0, 'U': 1, 'X': 2, 'I': 3, 'E': 4}
                     ret = []

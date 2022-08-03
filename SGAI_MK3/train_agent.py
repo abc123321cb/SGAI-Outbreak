@@ -17,7 +17,7 @@ ax.set_ylabel("# of invalid moves")
 num_of_moves = []
 num_of_invalid_moves = []
 
-TIMESTEPS_TRAINING = 1000000
+TIMESTEPS_TRAINING = 50000000
 PERCENT_TO_SHOW = 1
 SHOW_DEBUG = False
 

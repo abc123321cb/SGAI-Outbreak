@@ -1,5 +1,8 @@
 import csv
 
+# data_headers = ["Board Size", "Initial Infected Pop", "Initial Human Pop", 
+#                 "Turns", "Heal Moves", "Skips", "Cured", "Vaccinated", "Escaped", "Final Human Pop"]
+
 def data_collection(HumanPlay, every_turn, GameBoard, turns_taken, AmountExited, BoardSize):
     print(every_turn)
     
@@ -46,7 +49,6 @@ def data_collection(HumanPlay, every_turn, GameBoard, turns_taken, AmountExited,
             AI_writer = csv.writer(data_collected_AI)
             AI_writer.writerow(collected_data)
     
-
+    
 def steps_taken(player_action, every_turn):
     every_turn.append(player_action)
-

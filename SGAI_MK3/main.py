@@ -7,12 +7,14 @@ import random as rd
 import copy
 from ExitPoint import ExitPoint
 import DataCollection as DC
+import numpy as np
+import time
 
 # Constants
 OFFSET = 50                    # Number of pixels to offset grid to the top-left side
 DAYS_TO_DEATH = 100            # The number of days until there is a 50% chance of death
 SHOW_EPSILON_GRAPH = True
-AI_TYPE = "SENSE"
+AI_TYPE = "DEEP"
 ACTION_NUM = 8
 
 # Player controlled variables
@@ -116,11 +118,12 @@ while not game_active:
 if not HUMAN_PLAY:
     #rd.seed(1)
     if AI_TYPE == "DEEP":
-        import DeepLearning
-        import numpy as np
-        import tensorflow as tf         #pip install tensorflow
-        from tensorflow import keras
-        import keras.layers as layers
+        import stable_baselines3 as sb3 # pip install stable-baselines3[extra]
+
+
+        print("getting model")
+        trained_model = sb3.DQN.load("DQN_agent")
+
 
 # Player role variables
 player_role = "Government"      # Valid options are "Government" and "Zombie"
@@ -179,9 +182,8 @@ for epsilon_inc in epsilon_range:
                         for d in possible_entries:  # left
                             QTable2[a][b][c][d] = [0] * ACTION_NUM
         elif AI_TYPE == "DEEP":
-            Qmodel = DeepLearning.create_q_model(ROWS, COLUMNS, ACTION_NUM)
-            #Qmodel_target = DeepLearning.create_q_model(ROWS, COLUMNS, ACTION_NUM)
-            optimizer = keras.optimizers.Adam(learning_rate=alpha, clipnorm=1.0)  # Set the optimizer algorithim
+            pass
+
     
     episodes_ran = 0
     survivors = []
@@ -325,20 +327,40 @@ for epsilon_inc in epsilon_range:
                         )
                         player_action, choice = PF.greedy_epsilon(epsilon, QTable2[l[0]][l[1]][l[2]][l[3]])
                 elif AI_TYPE == "DEEP": # Using Deep QLearning
-                    # Convert the 2D state map into a tensor and feed it into the neural net
-                    state_tensor = tf.convert_to_tensor(GameBoard.state_map())
-                    state_tensor = tf.expand_dims(state_tensor, 0)
-                    action_probs = Qmodel(state_tensor, training=False)
-                    
-                    # Take best action according to the neural net
-                    choice = tf.argmax(action_probs[0]).numpy()
-                    player_action = PF.convert_to_action(choice)
-                    
-                    # TODO: Deal with the scenario that the neural net suggests a move that is not possible
+                    # Have AI select a action.
+                    ACTION_MAPPINGS = {
+                        0: ["vaccinate", "left"],
+                        1: ["vaccinate", "right"],
+                        2: ["vaccinate", "up"],
+                        3: ["vaccinate", "down"],
+                        4: ["move", "left"],
+                        5: ["move", "right"],
+                        6: ["move", "up"],
+                        7: ["move", "down"]
+                    }
+                    MAX_NUM_INDEX = 5
+                    time.sleep(1)
+                    # Get the current map in 1D
+                    num_dict = {'V': 0, 'U': 1, 'X': 2, 'I': 3, 'E': 4}
+                    ret = []
+                    for i in GameBoard.state:
+                        ret.append(num_dict[GameBoard.state_contents_to_char(i)])
+
+                    # Put the agent position on the map
+                    ret[GameBoard.govt_index] = 5
+
+                    # Normalize
+                    ret = np.array(ret, dtype=np.float32)
+                    ret /= np.float32(MAX_NUM_INDEX)
+                    ret -= np.float32(0.5)
+                    print(ret)
+                    chosen_action = trained_model.predict(ret, deterministic=True)
+                    print(f"chosen_action:{chosen_action}")
+                    player_action = ACTION_MAPPINGS[chosen_action[0]]
+                    print(f"player_action:{player_action}")
                     if player_action not in possible_moves:
-                        print(f"Neural net is suggesting {player_action} but this is not possible.")
-                        sys.exit()
-                        
+                        print("not valid")
+                        player_action = ["pass"]
                     
                 player_moved = True
             
@@ -387,53 +409,6 @@ for epsilon_inc in epsilon_range:
                             reward,
                             gamma,
                             max(QTable2[new[0]][new[1]][new[2]][new[3]]))
-                    elif AI_TYPE == "DEEP":
-                        # Figure out the reward of the action selected
-                        # TODO: Get this working
-                        
-                        # Get the reward for the current state, action pair
-                        reward = PF.reward2(player_action, GameBoard)
-                        
-                        # Train the neural net with the action, reward
-                        
-                        
-                        """
-                        SAMPLE 1
-                        # Compute the gradients for a list of variables.
-                        with tf.GradientTape() as tape:
-                            loss = <call_loss_function>
-                        vars = <list_of_variables>
-                        grads = tape.gradient(loss, vars)
-                        
-                        
-                        # Process the gradients, for example cap them, etc.
-                        # capped_grads = [MyCapper(g) for g in grads]
-                        processed_grads = [process_gradient(g) for g in grads]
-
-                        # Ask the optimizer to apply the processed gradients.
-                        optimizer.apply_gradients(zip(processed_grads, var_list))
-                        """
-                        
-                        
-                        """
-                        SAMPLE 2
-                        # Create a mask so we only calculate loss on the updated Q-values
-                        masks = tf.one_hot(action_sample, num_actions)
-                        
-                        with tf.GradientTape() as tape:
-                            # Train the model on the states and updated Q-values
-                            q_values = model(state_sample)
-
-                            # Apply the masks to the Q-values to get the Q-value for action taken
-                            q_action = tf.reduce_sum(tf.multiply(q_values, masks), axis=1)
-                            # Calculate loss between new Q-value and old Q-value
-                            loss = loss_function(updated_q_values, q_action)
-                        
-                        # Backpropagation
-                        grads = tape.gradient(loss, model.trainable_variables)
-                        optimizer.apply_gradients(zip(grads, model.trainable_variables))
-                        """
-                        
                         
                 #iterate through each exitpoint to check if a person is inside of them
                 #create an empty "amount" variable to store the amount of people who exited this round
